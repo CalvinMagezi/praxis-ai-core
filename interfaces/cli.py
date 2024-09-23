@@ -6,7 +6,6 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.prompt import Prompt
 from rich.markdown import Markdown
-from typing import List, Optional
 from datetime import datetime
 import re
 
@@ -39,25 +38,15 @@ def run_cli():
         
         console.print(f"\nCurrent workspace: [bold green]{workspace_manager.get_current_workspace()}[/bold green]")
         
-        command_table = Table(show_header=False, box=None)
-        command_table.add_column("Command", style="cyan")
-        command_table.add_column("Description", style="yellow")
-        command_table.add_row("objective", "Enter a new objective for Praxis AI")
-        command_table.add_row("new workspace", "Create a new workspace")
-        command_table.add_row("switch workspace", "Switch to a different workspace")
-        command_table.add_row("delete workspace", "Delete the current workspace")
-        command_table.add_row("list workspaces", "List all available workspaces")
-        command_table.add_row("quit", "Exit Praxis AI")
-        
-        console.print(command_table)
+        display_commands()
         
         action = Prompt.ask(
             "\nEnter command",
-            choices=["objective", "new workspace", "switch workspace", "delete workspace", "list workspaces", "quit"],
+            choices=["objective", "new workspace", "switch workspace", "delete workspace", "list workspaces", "exit"],
             default="objective"
         )
 
-        if action == "quit":
+        if action == "exit":
             console.print("[yellow]Thank you for using Praxis AI. Goodbye![/yellow]")
             break
         elif action == "new workspace":
@@ -70,7 +59,20 @@ def run_cli():
             list_workspaces()
         elif action == "objective":
             handle_objective()
+            display_commands()
 
+def display_commands():
+    command_table = Table(show_header=False, box=None)
+    command_table.add_column("Command", style="cyan")
+    command_table.add_column("Description", style="yellow")
+    command_table.add_row("objective", "Enter a new objective for Praxis AI")
+    command_table.add_row("new workspace", "Create a new workspace")
+    command_table.add_row("switch workspace", "Switch to a different workspace")
+    command_table.add_row("delete workspace", "Delete the current workspace")
+    command_table.add_row("list workspaces", "List all available workspaces")
+    command_table.add_row("exit", "Exit Praxis AI")
+    
+    console.print(command_table)
 
 def handle_workspace_creation():
     title = Prompt.ask("Enter workspace title")

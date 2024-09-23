@@ -1,13 +1,14 @@
 # core/refiner.py
 
 import ell
-from config.settings import REFINER_MODEL, PRAXIS_NAME
+from openai import OpenAI
+from config.settings import REFINER_MODEL, PRAXIS_NAME, OPENAI_API_KEY
 from config.models import AgentContext
 from workspace_manager import WorkspaceManager
 
 workspace_manager = WorkspaceManager()
 
-@ell.complex(model=REFINER_MODEL)
+@ell.complex(model=REFINER_MODEL, client=OpenAI(api_key=OPENAI_API_KEY))
 def refiner(context: AgentContext):
     """Praxis AI Refiner that provides the final output."""
     current_workspace = workspace_manager.get_current_workspace()

@@ -26,3 +26,6 @@ LOG_FILE = "praxis_ai.log"
 # API Configuration (for future use)
 API_HOST = "0.0.0.0"
 API_PORT = 8000
+
+# OpenAI API Key
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")

@@ -1,14 +1,15 @@
 # core/sub_agent.py
 
 import ell
-from config.settings import SUB_AGENT_MODEL, PRAXIS_NAME
+from openai import OpenAI
+from config.settings import SUB_AGENT_MODEL, PRAXIS_NAME, OPENAI_API_KEY
 from config.models import Task
 from workspace_manager import WorkspaceManager
 from typing import List
 
 workspace_manager = WorkspaceManager()
 
-@ell.complex(model=SUB_AGENT_MODEL)
+@ell.complex(model=SUB_AGENT_MODEL, client=OpenAI(api_key=OPENAI_API_KEY))
 def sub_agent(task: Task, previous_tasks: List[Task] = None):
     """Praxis AI Sub-agent that executes specific tasks."""
     if previous_tasks is None:
