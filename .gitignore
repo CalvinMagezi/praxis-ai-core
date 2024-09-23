@@ -143,3 +143,7 @@ Desktop.ini
 
 # Output files (if any)
 output/
+
+# MkDocs documentation
+/site/
+changelogusage.txt
