@@ -1,3 +1,13 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://praxis-app.online/logo.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://praxis-app.online/logo.png">
+  <img alt="ell logo that inverts based on color scheme" src="https://praxis-app.online/logo.png">
+</picture>
+
+---
+
+[![Praxis Cloud](https://praxis-app.online/logo.png)](https://praxis-app.online/) [![MTS](https://mts-africa.tech/logo.png)](https://mts-africa.tech/) [![My LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/calvin-magezi-639a53228/)
+
 # Praxis AI
 
 Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, sub-agent, and refiner model to break down and complete complex tasks. Inspired by the Maestro project, Praxis AI takes task management and AI-assisted problem-solving to the next level with its workspace-centric approach and enhanced user interaction.
