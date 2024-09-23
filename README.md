@@ -6,7 +6,7 @@
 
 ---
 
-[![Praxis Cloud]](https://praxis-app.online/) [![MTS]](https://mts-africa.tech/) [![My LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/calvin-magezi-639a53228/)
+[Try Praxis In The Cloud](https://praxis-app.online/) [Magezi Tech Solutions](https://mts-africa.tech/) [![My LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/calvin-magezi-639a53228/)
 
 # Praxis AI
 
