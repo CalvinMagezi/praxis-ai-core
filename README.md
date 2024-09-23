@@ -11,7 +11,7 @@ Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, 
 Version: 0.0.1
 Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
-[Try Praxis In The Cloud](https://praxis-app.online/), built by [Magezi Tech Solutions](https://mts-africa.tech/) [![My LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/calvin-magezi-639a53228/)
+[Try Praxis In The Cloud](https://praxis-app.online/), built by [Magezi Tech Solutions](https://mts-africa.tech/)
 
 ## Features
 
