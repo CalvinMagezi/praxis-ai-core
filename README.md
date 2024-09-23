@@ -1,12 +1,12 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://praxis-app.online/logo.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://praxis-app.online/logo.png">
-  <img alt="ell logo that inverts based on color scheme" src="https://praxis-app.online/logo.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://praxis-app.online/logo.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://praxis-app.online/logo.svg">
+  <img alt="ell logo that inverts based on color scheme" src="https://praxis-app.online/logo.svg">
 </picture>
 
 ---
 
-[![Praxis Cloud](https://praxis-app.online/logo.png)](https://praxis-app.online/) [![MTS](https://mts-africa.tech/logo.png)](https://mts-africa.tech/) [![My LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/calvin-magezi-639a53228/)
+[![Praxis Cloud]](https://praxis-app.online/) [![MTS]](https://mts-africa.tech/) [![My LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/calvin-magezi-639a53228/)
 
 # Praxis AI
 
