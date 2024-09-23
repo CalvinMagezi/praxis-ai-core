@@ -25,35 +25,26 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **Persistent Storage**: Save and load workspace data between sessions.
 - **Error Handling**: Robust error handling throughout the application.
 
-## Requirements
-
-- Python 3.7.1 or higher
-
 ## Installation
 
-### Option 1: Install via pip (Recommended for users)
-
-You can install Praxis AI directly from PyPI using pip:
-
-```
-pip install praxis-ai
-```
-
-### Option 2: Install using Poetry (Recommended for developers)
-
-1. Ensure you have Poetry installed. If not, install it by following the instructions at [https://python-poetry.org/docs/#installation](https://python-poetry.org/docs/#installation)
-
-2. Clone the repository:
+1. Clone the repository:
 
    ```
    git clone https://github.com/calvinmagezi/praxis-ai-core.git
    cd praxis-ai-core
    ```
 
-3. Install dependencies using Poetry:
+2. Create and activate a virtual environment:
 
    ```
-   poetry install
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   ```
+
+3. Install required packages:
+
+   ```
+   pip install -r requirements.txt
    ```
 
 4. Set up environment variables:
@@ -64,27 +55,10 @@ pip install praxis-ai
 
 ## Usage
 
-### If installed via pip:
-
-Run Praxis AI from anywhere in your terminal:
+Run Praxis AI from the project root:
 
 ```
-praxis-ai
-```
-
-### If installed using Poetry:
-
-Run Praxis AI using Poetry:
-
-```
-poetry run praxis-ai
-```
-
-Alternatively, you can activate the Poetry virtual environment and then run the app:
-
-```
-poetry shell
-praxis-ai
+python main.py
 ```
 
 Upon launching, you'll be greeted with a welcome message and a list of available commands. Here's what you can do:
@@ -131,11 +105,67 @@ praxis_ai/
 │   ├── test_sub_agent.py
 │   └── test_refiner.py
 ├── main.py                # Entry point of the application
-├── pyproject.toml         # Poetry configuration and project metadata
-├── setup.py               # Setuptools configuration for pip compatibility
+├── requirements.txt       # Project dependencies
+├── workspace_manager.py   # Workspace management functionality
 └── README.md
 ```
 
 ## Core Components
 
-[The rest of the README content remains unchanged]
+### Workspace Manager
+
+The `WorkspaceManager` class handles the creation, selection, and management of workspaces. It provides persistence for workspace data and ensures that all operations are performed in the context of the current workspace.
+
+### Orchestrator
+
+The orchestrator breaks down complex objectives into manageable sub-tasks. It considers the current workspace context and previous results to generate appropriate sub-tasks.
+
+### Sub-agent
+
+Sub-agents are specialized components that execute specific tasks. They receive instructions from the orchestrator and perform the required actions, considering the current workspace context.
+
+### Refiner
+
+The refiner consolidates the results from sub-agents and provides a cohesive final output. It ensures that the overall objective is met and that the output is consistent with the current workspace context.
+
+## Command-line Interface
+
+The CLI provides a rich, interactive interface for users to interact with Praxis AI. It uses the `rich` library to display colorful, formatted output and intuitive prompts for user input.
+
+## Error Handling and Logging
+
+Praxis AI implements comprehensive error handling throughout the application. Errors are caught, logged, and presented to the user in a friendly manner. The logging system tracks all operations and aids in debugging and troubleshooting.
+
+## Contributing
+
+Contributions to Praxis AI are welcome! To contribute:
+
+1. Fork the repository
+2. Create a new branch for your feature (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a pull request
+
+Please ensure your code adheres to the project's coding standards and includes appropriate tests.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Special Acknowledgments
+
+- The [Ell framework](https://docs.ell.so/index.html) for simplifying language model interactions and providing a solid foundation for AI-assisted task completion.
+- The [Maestro project](https://github.com/Doriandarko/maestro) for inspiring the concept of AI-driven task management and problem-solving.
+- All contributors and users of Praxis AI who help improve and expand its capabilities.
+
+## Future Developments
+
+Praxis AI is an ongoing project with plans for continuous improvement and expansion. Future developments may include:
+
+- Integration with more AI models and services
+- Enhanced web search and information retrieval capabilities
+- A web-based user interface for broader accessibility
+- Collaborative features for team-based problem-solving
+- Expanded tool integrations for more diverse task handling
+
+Stay tuned for updates and feel free to contribute ideas or code to shape the future of Praxis AI!

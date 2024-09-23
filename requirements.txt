@@ -1,6 +1,7 @@
 anthropic
 rich
 tavily-python
+ollama
 groq
 openai
 fastapi
