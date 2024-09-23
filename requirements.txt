@@ -1,0 +1,14 @@
+anthropic
+rich
+tavily-python
+ollama
+groq
+openai
+fastapi
+ell-ai
+python-dotenv
+uvicorn
+pydantic
+requests
+beautifulsoup4
+pytest
