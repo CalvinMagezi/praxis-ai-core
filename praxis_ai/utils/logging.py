@@ -1,7 +1,8 @@
 # utils/logging.py
 
 import logging
-from config.settings import LOG_LEVEL, LOG_FILE
+from ..config.settings import LOG_LEVEL, LOG_FILE
+
 
 # Configure logging
 logging.basicConfig(

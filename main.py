@@ -1,6 +1,4 @@
-# main.py
-
-from interfaces.cli import run_cli
+from praxis_ai.cli import main
 
 if __name__ == "__main__":
-    run_cli()
+    main()

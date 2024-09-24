@@ -2,7 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup
-from utils.logging import logger
+from ..utils.logging import logger
 
 def web_search(query: str, num_results: int = 5) -> list:
     """

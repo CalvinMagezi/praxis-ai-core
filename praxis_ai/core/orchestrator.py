@@ -1,14 +1,11 @@
-# core/orchestrator.py
-
 import ell
-from config.settings import ORCHESTRATOR_MODEL, PRAXIS_NAME, OPENAI_API_KEY
-from config.models import AgentContext
-from workspace_manager import WorkspaceManager
-from openai import OpenAI
+from ..config.settings import ORCHESTRATOR_MODEL, PRAXIS_NAME
+from ..config.models import AgentContext
+from ..workspace_manager import WorkspaceManager
 
 workspace_manager = WorkspaceManager()
 
-@ell.complex(model=ORCHESTRATOR_MODEL, client=OpenAI(api_key=OPENAI_API_KEY))
+@ell.complex(model=ORCHESTRATOR_MODEL)
 def orchestrator(context: AgentContext):
     """Praxis AI Orchestrator that breaks down objectives into sub-tasks."""
     current_workspace = workspace_manager.get_current_workspace()

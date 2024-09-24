@@ -4,9 +4,9 @@ import re
 import json
 import uuid
 from typing import List, Tuple
-from config.models import Task
-from utils.logging import logger
-from workspace_manager import WorkspaceManager
+from ..config.models import Task
+from .logging import logger
+from ..workspace_manager import WorkspaceManager
 
 workspace_manager = WorkspaceManager()
 

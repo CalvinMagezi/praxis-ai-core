@@ -12,7 +12,4 @@ pydantic
 requests
 beautifulsoup4
 pytest
-mkdocs
-mkdocs-material
-gitchangelog
-pystache
+click

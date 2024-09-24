@@ -1,17 +1,9 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://praxis-app.online/logo.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://praxis-app.online/logo.svg">
-  <img alt="ell logo that inverts based on color scheme" src="https://praxis-app.online/logo.svg">
-</picture>
-
 # Praxis AI
 
 Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, sub-agent, and refiner model to break down and complete complex tasks. Inspired by the Maestro project, Praxis AI takes task management and AI-assisted problem-solving to the next level with its workspace-centric approach and enhanced user interaction.
 
-Version: 0.0.1
+Version: 0.1.0
 Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
-
-[Try Praxis In The Cloud](https://praxis-app.online/), built by [Magezi Tech Solutions](https://mts-africa.tech/)
 
 ## Features
 
@@ -21,9 +13,14 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **Refiner**: Consolidates and improves results from sub-agents.
 - **Modular Architecture**: Easily expand and integrate new tools and functionalities.
 - **Rich Command-line Interface**: User-friendly CLI with colorful, informative output.
+- **API Interface**: FastAPI-based API for programmatic access to Praxis AI capabilities.
 - **Logging System**: Comprehensive logging for tracking operations and debugging.
 - **Persistent Storage**: Save and load workspace data between sessions.
 - **Error Handling**: Robust error handling throughout the application.
+- **Pip-installable Package**: Easy installation and usage as a Python package.
+- **Chat History**: Store and retrieve conversation history within workspaces.
+- **Workspace-Aware File Operations**: All file operations are performed within the context of the current workspace.
+- **API Key Management**: Securely manage and use API keys for various services.
 
 ## Installation
 
@@ -41,73 +38,133 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
    ```
 
-3. Install required packages:
+3. Install Praxis AI:
 
    ```
-   pip install -r requirements.txt
+   pip install -e .
    ```
+
+   This will install Praxis AI in editable mode, allowing you to make changes to the code and immediately see the effects.
 
 4. Set up environment variables:
    Create a `.env` file in the project root and add your API keys:
+
    ```
    OPENAI_API_KEY=your_openai_api_key_here
+   ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   TAVILY_API_KEY=your_tavily_api_key_here
+   GROQ_API_KEY=your_groq_api_key_here
+   ```
+
+   Alternatively, you can set these environment variables in your shell:
+
+   ```
+   export OPENAI_API_KEY=your_openai_api_key_here
+   export ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   export TAVILY_API_KEY=your_tavily_api_key_here
+   export GROQ_API_KEY=your_groq_api_key_here
    ```
 
 ## Usage
 
-Run Praxis AI from the project root:
+After installation, you can use Praxis AI through its command-line interface:
 
-```
-python main.py
-```
+1. List available workspaces:
 
-Upon launching, you'll be greeted with a welcome message and a list of available commands. Here's what you can do:
+   ```
+   praxis list
+   ```
 
-- **Create a new workspace**: Organize your projects in separate workspaces.
-- **Switch workspaces**: Move between different project contexts.
-- **Delete workspaces**: Remove workspaces you no longer need.
-- **List workspaces**: View all available workspaces.
-- **Enter an objective**: Provide a task for Praxis AI to work on.
-- **Quit**: Exit the application.
+2. Create a new workspace:
 
-Follow the on-screen prompts to interact with Praxis AI and complete your objectives.
+   ```
+   praxis enter
+   ```
+
+   If no workspaces exist, you'll be prompted to create one.
+
+3. Enter an existing workspace:
+
+   ```
+   praxis enter "Workspace Name"
+   ```
+
+4. Start a chat session within a workspace:
+
+   Once you've entered a workspace, you'll be in chat mode. You can have a conversation with Praxis or start an objective:
+
+   ```
+   objective: Create a Python script that calculates prime numbers
+   ```
+
+5. View conversation history:
+
+   ```
+   praxis history --workspace "Workspace Name"
+   ```
+
+   If no workspace is specified, it will show the history for the current workspace.
+
+6. Exit a workspace:
+
+   Type 'exit' when in chat mode to leave the workspace.
+
+## API Usage
+
+To use the Praxis AI API:
+
+1. Start the FastAPI server:
+
+   ```
+   uvicorn praxis_ai.interfaces.api:app --reload
+   ```
+
+2. Send a POST request to `http://localhost:8000/process_objective` with a JSON body containing the objective:
+
+   ```json
+   {
+     "objective": "Create a marketing plan for a new product launch"
+   }
+   ```
 
 ## Project Structure
 
 ```
 praxis_ai/
-├── config/
+├── praxis_ai/
 │   ├── __init__.py
-│   ├── settings.py        # Global configuration settings
-│   └── models.py          # Pydantic models for data structures
-├── core/
-│   ├── __init__.py
-│   ├── orchestrator.py    # Task breakdown and management
-│   ├── sub_agent.py       # Specialized task execution
-│   └── refiner.py         # Result consolidation and improvement
-├── tools/
-│   ├── __init__.py
-│   ├── file_operations.py # File and folder management utilities
-│   └── web_search.py      # Web search functionality (placeholder)
-├── utils/
-│   ├── __init__.py
-│   ├── logging.py         # Logging configuration and utilities
-│   └── helpers.py         # General helper functions
-├── interfaces/
-│   ├── __init__.py
-│   ├── cli.py             # Command-line interface
-│   └── api.py             # API interface (placeholder for future use)
-├── data/
-│   └── .gitkeep           # Directory for storing workspace data
+│   ├── cli.py
+│   ├── config/
+│   │   ├── __init__.py
+│   │   ├── settings.py
+│   │   └── models.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── orchestrator.py
+│   │   ├── sub_agent.py
+│   │   └── refiner.py
+│   ├── tools/
+│   │   ├── __init__.py
+│   │   ├── file_operations.py
+│   │   └── web_search.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── logging.py
+│   │   └── helpers.py
+│   ├── interfaces/
+│   │   ├── __init__.py
+│   │   └── api.py
+│   └── workspace_manager.py
 ├── tests/
 │   ├── __init__.py
 │   ├── test_orchestrator.py
 │   ├── test_sub_agent.py
 │   └── test_refiner.py
-├── main.py                # Entry point of the application
-├── requirements.txt       # Project dependencies
-├── workspace_manager.py   # Workspace management functionality
-└── README.md
+├── setup.py
+├── requirements.txt
+├── README.md
+├── LICENSE
+└── .env
 ```
 
 ## Core Components
@@ -132,6 +189,10 @@ The refiner consolidates the results from sub-agents and provides a cohesive fin
 
 The CLI provides a rich, interactive interface for users to interact with Praxis AI. It uses the `rich` library to display colorful, formatted output and intuitive prompts for user input.
 
+## API Interface
+
+The FastAPI-based API allows for programmatic access to Praxis AI's capabilities, enabling integration with other applications and services.
+
 ## Error Handling and Logging
 
 Praxis AI implements comprehensive error handling throughout the application. Errors are caught, logged, and presented to the user in a friendly manner. The logging system tracks all operations and aids in debugging and troubleshooting.
@@ -152,11 +213,23 @@ Please ensure your code adheres to the project's coding standards and includes a
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Special Acknowledgments
+## Acknowledgments
 
-- The [Ell framework](https://docs.ell.so/index.html) for simplifying language model interactions and providing a solid foundation for AI-assisted task completion.
-- The [Maestro project](https://github.com/Doriandarko/maestro) for inspiring the concept of AI-driven task management and problem-solving.
+- OpenAI for providing the GPT models that power Praxis AI's language understanding and generation capabilities.
+- The Ell framework for simplifying language model interactions and providing a solid foundation for AI-assisted task completion.
+- The Maestro project for inspiring the concept of AI-driven task management and problem-solving.
 - All contributors and users of Praxis AI who help improve and expand its capabilities.
+
+## Troubleshooting
+
+If you encounter any issues:
+
+1. Ensure all required environment variables (API keys) are set correctly.
+2. Check that you're using a compatible Python version (3.7+).
+3. Make sure all dependencies are installed correctly (`pip install -r requirements.txt`).
+4. If you encounter any "module not found" errors, try reinstalling the package (`pip install -e .`).
+
+For more help, please open an issue on the GitHub repository.
 
 ## Future Developments
 

@@ -2,17 +2,16 @@
 
 import os
 from pathlib import Path
-from utils.logging import logger
-from workspace_manager import WorkspaceManager
+from ..utils.logging import logger
+from ..workspace_manager import WorkspaceManager
 
 workspace_manager = WorkspaceManager()
 
-def create_folder_structure(project_name: str, folder_structure: dict, code_blocks: list):
-    current_workspace = workspace_manager.get_current_workspace()
-    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+def create_folder_structure(workspace_name: str, project_name: str, folder_structure: dict, code_blocks: list):
+    workspace_path = workspace_manager.get_workspace_path(workspace_name)
     
     if not workspace_path:
-        logger.error(f"No valid workspace path for current workspace: {current_workspace}")
+        logger.error(f"No valid workspace path for workspace: {workspace_name}")
         return
 
     project_path = Path(workspace_path) / project_name
@@ -48,21 +47,33 @@ def create_folders_and_files(current_path: Path, structure: dict, code_blocks: l
             else:
                 logger.warning(f"Code content not found for file: {key}")
 
-def read_file(file_path: str) -> str:
+def read_file(workspace_name: str, file_path: str) -> str:
+    workspace_path = workspace_manager.get_workspace_path(workspace_name)
+    if not workspace_path:
+        logger.error(f"No valid workspace path for workspace: {workspace_name}")
+        return ""
+
+    full_path = Path(workspace_path) / file_path
     try:
-        with open(file_path, 'r') as file:
+        with open(full_path, 'r') as file:
             content = file.read()
         return content
     except IOError as e:
-        logger.error(f"Error reading file: {file_path}. Error: {e}")
+        logger.error(f"Error reading file: {full_path}. Error: {e}")
         return ""
 
-def write_file(file_path: str, content: str) -> bool:
+def write_file(workspace_name: str, file_path: str, content: str) -> bool:
+    workspace_path = workspace_manager.get_workspace_path(workspace_name)
+    if not workspace_path:
+        logger.error(f"No valid workspace path for workspace: {workspace_name}")
+        return False
+
+    full_path = Path(workspace_path) / file_path
     try:
-        with open(file_path, 'w') as file:
+        with open(full_path, 'w') as file:
             file.write(content)
-        logger.info(f"File written successfully: {file_path}")
+        logger.info(f"File written successfully: {full_path}")
         return True
     except IOError as e:
-        logger.error(f"Error writing file: {file_path}. Error: {e}")
+        logger.error(f"Error writing file: {full_path}. Error: {e}")
         return False

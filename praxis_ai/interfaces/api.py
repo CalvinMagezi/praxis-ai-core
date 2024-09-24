@@ -2,11 +2,11 @@
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from config.models import AgentContext
-from core.orchestrator import orchestrator
-from core.sub_agent import sub_agent
-from core.refiner import refiner
-from utils.helpers import create_task
+from ..config.models import AgentContext
+from ..core.orchestrator import orchestrator
+from ..core.sub_agent import sub_agent
+from ..core.refiner import refiner
+from ..utils.helpers import create_task
 
 app = FastAPI()
 
