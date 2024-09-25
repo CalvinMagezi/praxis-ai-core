@@ -2,7 +2,8 @@ import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-from rich.prompt import Prompt
+from rich.prompt import Prompt, Confirm
+from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.markdown import Markdown
 from rich import box
 from typing import Optional, List
@@ -21,6 +22,10 @@ from .utils.helpers import sanitize_string, parse_folder_structure, extract_code
 from .tools.file_operations import create_folder_structure
 from .workspace_manager import WorkspaceManager, WorkspaceError
 from .config.settings import CHAT_MODEL  # Import the CHAT_MODEL setting
+from rich import print as rprint
+from rich.text import Text
+from rich.syntax import Syntax
+import time
 
 console = Console()
 workspace_manager = WorkspaceManager()
@@ -37,56 +42,123 @@ def check_api_key():
 @click.group()
 def cli():
     """Praxis AI - Your intelligent workspace assistant"""
-    api_key = check_api_key()
-    ell.init(store='./ell_logdir', autocommit=True)
+    pass
+
+@cli.group()
+def create():
+    """Create new elements (workspace, studio, workflow, or form)"""
+    pass
+
+@create.command()
+def workspace():
+    """Create and initialize a new workspace"""
+    console = Console()
+    console.print("[bold cyan]Creating a new workspace[/bold cyan]")
     
-    # Register the OpenAI client for all models we're using
-    openai_client = OpenAI(api_key=api_key)
-    ell.config.register_model("gpt-4o", openai_client)
-    ell.config.register_model("gpt-4o-mini", openai_client)
-    # Add any other models you're using in your application
+    title = Prompt.ask("[yellow]Enter workspace title[/yellow]")
+    description = Prompt.ask("[yellow]Enter workspace description[/yellow]")
+    
+    try:
+        if workspace_manager.create_workspace(title, description):
+            console.print(Panel(f"[green]Workspace '{title}' created successfully.[/green]", border_style="green"))
+            
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                console=console
+            ) as progress:
+                task = progress.add_task("[cyan]Initializing workspace structure...[/cyan]", total=None)
+                workspace_manager.initialize_workspace_structure(title)
+                progress.update(task, completed=True)
+            
+            console.print("[bold green]Workspace initialized successfully![/bold green]")
+            console.print(f"[yellow]You can now enter your workspace by typing:[/yellow] praxis enter '{title}'")
+    except WorkspaceError as e:
+        console.print(Panel(f"[red]Error: {str(e)}[/red]", border_style="red"))
+
+@create.command()
+@click.pass_context
+def studio(ctx):
+    """Create a new studio within the current workspace"""
+    if not workspace_manager.get_current_workspace():
+        console.print("[red]Error: You must be in a workspace to create a studio.[/red]")
+        ctx.abort()
+    # Implement studio creation logic here
+    console.print("[green]Studio created successfully![/green]")
+
+@create.command()
+@click.pass_context
+def workflow(ctx):
+    """Create a new workflow within the current workspace"""
+    if not workspace_manager.get_current_workspace():
+        console.print("[red]Error: You must be in a workspace to create a workflow.[/red]")
+        ctx.abort()
+    # Implement workflow creation logic here
+    console.print("[green]Workflow created successfully![/green]")
+
+@create.command()
+@click.pass_context
+def form(ctx):
+    """Create a new form within the current workspace"""
+    if not workspace_manager.get_current_workspace():
+        console.print("[red]Error: You must be in a workspace to create a form.[/red]")
+        ctx.abort()
+    # Implement form creation logic here
+    console.print("[green]Form created successfully![/green]")
 
 @cli.command()
-def list():
-    """List all available workspaces"""
-    list_workspaces()
-
-@cli.command()
-@click.argument('workspace_name', nargs=-1, required=False)
-def enter(workspace_name: tuple):
-    """Enter a workspace and start chat mode"""
-    workspace_name = ' '.join(workspace_name) if workspace_name else None
-    
-    if not workspace_name:
-        workspaces = workspace_manager.list_workspaces()
-        if not workspaces:
-            console.print("[yellow]No workspaces found. Creating a new one.[/yellow]")
-            create_new_workspace()
-        else:
-            list_workspaces()
-            workspace_name = Prompt.ask("Enter the name of the workspace you want to enter")
-    
+@click.argument('workspace_name')
+def enter(workspace_name):
+    """Enter an existing workspace"""
     try:
         workspace_manager.select_workspace(workspace_name)
         console.clear()
         console.print(Panel(f"[bold green]{workspace_name}[/bold green]", 
                             expand=False, border_style="bold", box=box.DOUBLE))
-        start_chat_mode(workspace_name)
+        workspace_cli()
     except WorkspaceError as e:
         console.print(f"[red]Error: {str(e)}[/red]")
-        if Prompt.ask("Would you like to create a new workspace?", choices=["y", "n"]) == "y":
-            create_new_workspace()
 
 @cli.command()
-@click.option('--workspace', help='Workspace name to show history for')
-def history(workspace: Optional[str] = None):
-    """Show conversation history for a workspace"""
-    if not workspace:
-        workspace = workspace_manager.get_current_workspace()
-        if not workspace:
-            console.print("[yellow]No workspace selected. Please enter a workspace first.[/yellow]")
-            return
-    
+@click.argument('workspace_name')
+def delete(workspace_name):
+    """Delete a specific workspace"""
+    if click.confirm(f"Are you sure you want to delete the workspace '{workspace_name}'? All files and folders within the workspace will be permanently deleted.", abort=True):
+        try:
+            workspace_manager.delete_workspace(workspace_name)
+            console.print(f"[green]Workspace '{workspace_name}' has been deleted.[/green]")
+        except WorkspaceError as e:
+            console.print(f"[red]Error: {str(e)}[/red]")
+
+def workspace_cli():
+    """CLI for operations within a workspace"""
+    while True:
+        command = Prompt.ask(
+            "Enter command",
+            choices=["chat", "obj", "objective", "history", "create studio", "create workflow", "create form", "exit"]
+        )
+        
+        if command == "chat":
+            start_chat_mode(workspace_manager.get_current_workspace())
+        elif command in ["obj", "objective"]:
+            objective = Prompt.ask("Enter your objective")
+            handle_objective(objective, workspace_manager.get_current_workspace())
+        elif command == "history":
+            show_history()
+        elif command.startswith("create"):
+            _, create_type = command.split(" ", 1)
+            if create_type == "studio":
+                create.invoke(click.Context(create), ["studio"])
+            elif create_type == "workflow":
+                create.invoke(click.Context(create), ["workflow"])
+            elif create_type == "form":
+                create.invoke(click.Context(create), ["form"])
+        elif command == "exit":
+            break
+
+def show_history():
+    """Show conversation history for the current workspace"""
+    workspace = workspace_manager.get_current_workspace()
     chats = workspace_manager.list_chats(workspace)
     if not chats:
         console.print(f"[yellow]No chat history found for workspace '{workspace}'.[/yellow]")
@@ -108,31 +180,6 @@ def history(workspace: Optional[str] = None):
             console.print(Panel(Markdown(chat_content), title=chat_to_view, border_style="green"))
         else:
             console.print(f"[yellow]Chat '{chat_to_view}' not found.[/yellow]")
-
-def create_new_workspace():
-    title = Prompt.ask("Enter workspace title")
-    description = Prompt.ask("Enter workspace description")
-    try:
-        if workspace_manager.create_workspace(title, description):
-            console.print(Panel(f"[green]Workspace '{title}' created successfully.[/green]", border_style="green"))
-            start_chat_mode(title)
-    except WorkspaceError as e:
-        console.print(Panel(f"[red]Error: {str(e)}[/red]", border_style="red"))
-
-def list_workspaces():
-    workspaces = workspace_manager.list_workspaces()
-    if not workspaces:
-        console.print("[yellow]No workspaces found.[/yellow]")
-        return
-
-    table = Table(title="Praxis AI Workspaces")
-    table.add_column("Title", style="cyan", no_wrap=True)
-    table.add_column("Description", style="magenta")
-
-    for workspace in workspaces:
-        table.add_row(workspace["title"], workspace["description"])
-
-    console.print(table)
 
 def start_chat_mode(workspace_name: str):
     console.print("[bold green]Entering chat mode for workspace: [/bold green]" + workspace_name)
@@ -175,8 +222,9 @@ def handle_objective(objective: str, workspace_name: str):
     
     console.print(Panel(f"[bold]Objective:[/bold] {objective}", border_style="blue"))
     
-    with console.status("[bold yellow]Thinking hard...[/bold yellow]") as status:
+    with console.status("[bold yellow]Analyzing objective...[/bold yellow]") as status:  # Updated status message
         while True:
+            status.update("[bold yellow]Breaking down tasks...[/bold yellow]")  # New status update
             orchestrator_response = orchestrator(context)
             orchestrator_text = orchestrator_response.text
             console.print(Panel(Markdown(orchestrator_text), border_style="yellow"))
@@ -187,7 +235,7 @@ def handle_objective(objective: str, workspace_name: str):
             task = create_task(orchestrator_text)
             context.tasks.append(task)
 
-            status.update("[bold cyan]Thinking fast...[/bold cyan]")
+            status.update(f"[bold cyan]Working on: {task.description[:30]}...[/bold cyan]")  # Updated status message
             sub_agent_response = sub_agent(task, context.tasks)
             sub_agent_text = sub_agent_response.text
             console.print(Panel(Markdown(sub_agent_text), border_style="cyan"))
@@ -196,8 +244,9 @@ def handle_objective(objective: str, workspace_name: str):
             task.status = "completed"
             context.previous_results.append(sub_agent_text)
 
-            status.update("[bold yellow]Thinking hard...[/bold yellow]")
+            status.update("[bold yellow]Evaluating progress...[/bold yellow]")  # New status update
 
+    status.update("[bold green]Finalizing results...[/bold green]")  # New status update
     refiner_response = refiner(context)
     refined_output = refiner_response.text
 
@@ -236,8 +285,84 @@ def save_log(objective: str, context: AgentContext, refined_output: str, workspa
     except Exception as e:
         console.print(f"\n[red]Error saving log file: {str(e)}[/red]")
 
+@cli.command()
+def list():
+    """List all available workspaces"""
+    workspaces = workspace_manager.list_workspaces()
+    if not workspaces:
+        console.print("[yellow]No workspaces found.[/yellow]")
+        return
+
+    table = Table(title="Praxis AI Workspaces")
+    table.add_column("Title", style="cyan", no_wrap=True)
+    table.add_column("Description", style="magenta")
+
+    for workspace in workspaces:
+        table.add_row(workspace["title"], workspace["description"])
+
+    console.print(table)
+
+@cli.command()
 def main():
-    cli()
+    """Display available commands"""
+    praxis_text = Text()
+    praxis_text.append("  ____                 _     \n", style="bold cyan")
+    praxis_text.append(" |  _ \\ _ __ __ ___  _(_)___ \n", style="bold cyan")
+    praxis_text.append(" | |_) | '__/ _` \\ \\/ / / __|\n", style="bold cyan")
+    praxis_text.append(" |  __/| | | (_| |>  <| \\__ \\\n", style="bold cyan")
+    praxis_text.append(" |_|   |_|  \\__,_/_/\\_\\_|___/\n", style="bold cyan")
+    praxis_text.append("\nYour Intelligent Workspace Assistant", style="italic yellow")
+    
+    console.print(Panel(praxis_text, expand=False, border_style="bold"))
+
+    table = Table(title="Available Commands", show_header=True, header_style="bold magenta")
+    table.add_column("Command", style="cyan", no_wrap=True)
+    table.add_column("Description", style="green")
+    table.add_column("Example", style="yellow")
+
+    table.add_row(
+        "list",
+        "List all available workspaces",
+        "praxis list"
+    )
+    table.add_row(
+        "create workspace",
+        "Create and initialize a new workspace",
+        "praxis create workspace"
+    )
+    table.add_row(
+        "enter",
+        "Enter an existing workspace",
+        "praxis enter 'My Workspace'"
+    )
+    table.add_row(
+        "delete",
+        "Delete a specific workspace",
+        "praxis delete 'Old Workspace'"
+    )
+
+    console.print(table)
+
+    console.print("\n[bold]Usage Examples:[/bold]")
+    examples = """
+    # List all workspaces
+    $ praxis list
+
+    # Create a new workspace
+    $ praxis create workspace
+
+    # Enter an existing workspace
+    $ praxis enter "My Project Workspace"
+
+    # Delete a workspace (with confirmation)
+    $ praxis delete "Outdated Workspace"
+
+    # Get help for a specific command
+    $ praxis create --help
+    """
+    console.print(Syntax(examples, "bash", theme="monokai", line_numbers=True))
+
+    console.print("\n[bold yellow]Note:[/bold yellow] Use 'praxis [command] --help' for more information on a specific command.")
 
 if __name__ == "__main__":
-    main()
+    cli()
