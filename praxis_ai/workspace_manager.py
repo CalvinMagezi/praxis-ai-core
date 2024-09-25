@@ -5,6 +5,8 @@ from typing import Dict, Optional, List
 from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
+import time
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 class WorkspaceError(Exception):
     """Custom exception for workspace-related errors."""
@@ -214,3 +216,35 @@ class WorkspaceManager:
                     raise WorkspaceError(f"Error loading chat: {e}")
         
         return None
+
+    def initialize_workspace_structure(self, workspace_name: str):
+        workspace_path = self.get_workspace_path(workspace_name)
+        if not workspace_path:
+            raise WorkspaceError(f"Workspace '{workspace_name}' does not exist")
+        
+        folders = {
+            "Chat": ["History"],
+            "Studio": ["Content"],
+            "Automations": ["Connections", "Workflows"],
+            "Builder": ["Form"],
+            "Memory": []
+        }
+        
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=self.console
+        ) as progress:
+            for folder, subfolders in folders.items():
+                task = progress.add_task(f"Setting up your {folder}...", total=None)
+                folder_path = Path(workspace_path) / folder
+                folder_path.mkdir(exist_ok=True)
+                
+                for subfolder in subfolders:
+                    subfolder_path = folder_path / subfolder
+                    subfolder_path.mkdir(exist_ok=True)
+                
+                time.sleep(0.5)  # Add a small delay for visual effect
+                progress.update(task, completed=True)
+        
+        self.console.print("[bold green]Workspace structure initialized successfully![/bold green]")

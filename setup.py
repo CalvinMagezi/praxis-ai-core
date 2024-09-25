@@ -33,7 +33,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "praxis=praxis_ai.cli:main",
+            "praxis=praxis_ai.cli:cli",
         ],
     },
     classifiers=[
