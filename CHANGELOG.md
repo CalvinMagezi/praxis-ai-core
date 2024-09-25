@@ -5,6 +5,47 @@ All notable changes to Praxis AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2024-09-25
+
+### Added
+
+- New workspace initialization helper function
+  - Automatically creates a predefined folder structure for new workspaces
+  - Sets up Chat, Studio, Automations, Builder, and Memory folders with respective subfolders
+- Improved visual feedback during workspace initialization
+  - Added progress indicators with spinning animations for each main folder setup
+- New root-level CLI structure
+  - `praxis` command now displays a list of available commands
+  - Added `create` command for creating and initializing a new workspace
+  - Added `delete` command for removing workspaces with a warning
+- Workspace-specific CLI with `chat`, `obj`/`objective`, `history`, and `exit` commands
+- Short version `obj` as an alias for `objective` command
+
+### Changed
+
+- Enhanced CLI feedback during task execution
+  - Replaced generic "thinking" messages with more contextual status updates
+  - Now provides specific information about current actions (e.g., "Breaking down tasks", "Evaluating progress")
+- Updated `create_new_workspace` function to use the new initialization helper
+- Modified `handle_objective` function to give more detailed progress information
+- Restructured CLI flow for better user experience
+  - Root-level commands for workspace management
+  - Workspace-specific commands accessible after entering a workspace
+- `enter` command now leads to a workspace-specific CLI
+- `history` command is now only available within a workspace context
+
+### Improved
+
+- User experience during workspace creation and task execution
+- Clarity of CLI output with more specific status messages
+- Clearer separation between workspace management and workspace-specific operations
+- More intuitive command structure and flow
+- Enhanced safety with confirmation step for workspace deletion
+
+### Removed
+
+- Removed direct access to workspace-specific functions from root level
+
 ## [0.1.1] - 2024-09-24
 
 ### Added
