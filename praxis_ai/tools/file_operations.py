@@ -1,10 +1,15 @@
 # tools/file_operations.py
 
 import ell
-import os
 from pathlib import Path
+from ..workspace_manager import WorkspaceManager
 from ..utils.logging import logger
-from ..workspace_manager import WorkspaceManager, WorkspaceError
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+import pypdf
+import docx
+
 
 workspace_manager = WorkspaceManager()
 
@@ -115,3 +120,117 @@ def create_folder_structure_tool(project_name: str, folder_structure: dict, code
 
     create_folders_and_files(project_path, folder_structure, code_blocks)
     return f"Folder structure created for project '{project_name}' in workspace '{current_workspace}'"
+
+@ell.tool()
+def create_pdf_tool(file_path: str, content: str, current_workspace: str) -> str:
+    """Create a PDF file in the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    full_path = Path(workspace_path) / file_path
+    try:
+        buffer = BytesIO()
+        c = canvas.Canvas(buffer, pagesize=letter)
+        text_object = c.beginText(40, 750)
+        for line in content.split('\n'):
+            text_object.textLine(line)
+        c.drawText(text_object)
+        c.save()
+
+        with open(full_path, 'wb') as file:
+            file.write(buffer.getvalue())
+        return f"PDF file created successfully: {full_path}"
+    except Exception as e:
+        error_message = f"Error creating PDF file: {full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def read_pdf_tool(file_path: str, current_workspace: str) -> str:
+    """Read the contents of a PDF file in the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    full_path = Path(workspace_path) / file_path
+    try:
+        with open(full_path, 'rb') as file:
+            reader = pypdf.PdfReader(file)
+            content = ""
+            for page in reader.pages:
+                content += page.extract_text()
+        return content
+    except Exception as e:
+        error_message = f"Error reading PDF file: {full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def create_word_document_tool(file_path: str, content: str, current_workspace: str) -> str:
+    """Create a Word document in the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    full_path = Path(workspace_path) / file_path
+    try:
+        doc = docx.Document()
+        doc.add_paragraph(content)
+        doc.save(full_path)
+        return f"Word document created successfully: {full_path}"
+    except Exception as e:
+        error_message = f"Error creating Word document: {full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def read_word_document_tool(file_path: str, current_workspace: str) -> str:
+    """Read the contents of a Word document in the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    full_path = Path(workspace_path) / file_path
+    try:
+        doc = docx.Document(full_path)
+        content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+        return content
+    except Exception as e:
+        error_message = f"Error reading Word document: {full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def create_markdown_file_tool(file_path: str, content: str, current_workspace: str) -> str:
+    """Create a Markdown file in the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    full_path = Path(workspace_path) / file_path
+    try:
+        with open(full_path, 'w') as file:
+            file.write(content)
+        return f"Markdown file created successfully: {full_path}"
+    except Exception as e:
+        error_message = f"Error creating Markdown file: {full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def read_markdown_file_tool(file_path: str, current_workspace: str) -> str:
+    """Read the contents of a Markdown file in the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    full_path = Path(workspace_path) / file_path
+    try:
+        with open(full_path, 'r') as file:
+            content = file.read()
+        return content
+    except Exception as e:
+        error_message = f"Error reading Markdown file: {full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message

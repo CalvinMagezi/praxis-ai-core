@@ -2,7 +2,7 @@
 
 Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, sub-agent, and refiner model to break down and complete complex tasks. Inspired by the Maestro project, Praxis AI takes task management and AI-assisted problem-solving to the next level with its workspace-centric approach and enhanced user interaction.
 
-Version: 0.1.3
+Version: 0.1.4
 Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
 ## Features
@@ -18,6 +18,8 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **Persistent Storage**: Save and load workspace data between sessions.
 - **Error Handling**: Robust error handling throughout the application.
 - **Pip-installable Package**: Easy installation and usage as a Python package.
+- **Advanced File Handling**: Create and read various file types including PDFs, Word documents, and Markdown files within workspaces.
+- **Conversation History Management**: Maintain and utilize conversation history for context-aware interactions across sessions.
 - **Chat History**: Store and retrieve conversation history within workspaces.
 - **Workspace-Aware File Operations**: All file operations are performed within the context of the current workspace.
 - **API Key Management**: Securely manage and use API keys for various services.
@@ -48,7 +50,13 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
    This will install Praxis AI in editable mode, allowing you to make changes to the code and immediately see the effects.
 
-4. Set up environment variables:
+4. Install additional dependencies:
+
+   ```
+   pip install reportlab python-docx markdown
+   ```
+
+5. Set up environment variables:
    Create a `.env` file in the project root and add your API keys:
 
    ```
@@ -83,10 +91,15 @@ After installation, you can use Praxis AI through its command-line interface:
    - To list workspaces: "List all my workspaces"
    - To enter a workspace: "Enter the Projects workspace"
    - To start an objective: "I want to create a Python script that calculates prime numbers"
+   - To create a PDF: "Create a PDF file named 'report.pdf' with the content 'This is a test report.'"
+   - To read a Word document: "Read the contents of the file 'meeting_notes.docx'"
+   - To create a Markdown file: "Create a Markdown file named 'todo.md' with a list of tasks"
 
 3. Praxis will guide you through the process, using various tools to accomplish tasks as needed.
 
-4. To exit Praxis AI, simply type 'exit' in the chat interface.
+4. Praxis AI now maintains conversation history. You can ask about previous interactions within the same workspace.
+
+5. To exit Praxis AI, simply type 'exit' in the chat interface.
 
 ## API Usage
 
@@ -164,6 +177,10 @@ Sub-agents are specialized components that execute specific tasks. They receive 
 
 The refiner consolidates the results from sub-agents and provides a cohesive final output. It ensures that the overall objective is met and that the output is consistent with the current workspace context.
 
+### File Operations
+
+The `file_operations.py` module contains tools for creating and reading various file types, including PDFs, Word documents, and Markdown files. These operations are workspace-aware, ensuring that files are created and accessed within the context of the current workspace.
+
 ### Chat Interface
 
 The chat interface provides a natural language interaction point for users to communicate with Praxis AI. It interprets user inputs, manages tool executions, and presents results in a conversational manner.
@@ -202,6 +219,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - The Ell framework for simplifying language model interactions and providing a solid foundation for AI-assisted task completion.
 - The Maestro project for inspiring the concept of AI-driven task management and problem-solving.
 - All contributors and users of Praxis AI who help improve and expand its capabilities.
+- The reportlab, python-docx, and markdown libraries for enabling advanced file handling capabilities.
 
 ## Troubleshooting
 
@@ -212,6 +230,7 @@ If you encounter any issues:
 3. Make sure all dependencies are installed correctly (`pip install -r requirements.txt`).
 4. If you encounter any "module not found" errors, try reinstalling the package (`pip install -e .`).
 5. If you encounter issues with tool execution or unexpected responses, check the debug output in the console for more information about tool calls and their results.
+6. If you encounter issues with file creation or reading, ensure that you have the necessary permissions in the workspace directory and that the required libraries (reportlab, python-docx, markdown) are correctly installed.
 
 For more help, please open an issue on the GitHub repository.
 
@@ -224,5 +243,6 @@ Praxis AI is an ongoing project with plans for continuous improvement and expans
 - A web-based user interface for broader accessibility
 - Collaborative features for team-based problem-solving
 - Expanded tool integrations for more diverse task handling
+- Further enhancements to file handling capabilities, including support for more file formats and advanced operations like file merging and splitting.
 
 Stay tuned for updates and feel free to contribute ideas or code to shape the future of Praxis AI!

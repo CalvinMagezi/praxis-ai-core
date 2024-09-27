@@ -5,6 +5,29 @@ All notable changes to Praxis AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2024-09-27
+
+### Added
+
+- New file handling capabilities:
+  - Create and read PDF files
+  - Create and read Word documents
+  - Create and read Markdown files
+- Conversation history management within workspaces
+- New tools for file operations in `file_operations.py`
+- Updated `chat` function to handle new file operations and maintain conversation history
+
+### Changed
+
+- ⚠️ BREAKING CHANGE: Replaced PyPDF library with reportlab for PDF creation
+- Updated `requirements.txt` to include new dependencies: reportlab, python-docx, markdown
+- Modified `cli.py` to handle new file operations and conversation history
+- Enhanced error handling in file operations
+
+### Fixed
+
+- Resolved issue with PDF creation failing due to incompatible PyPDF library
+
 ## [0.1.3] - 2024-09-27
 
 ### Added

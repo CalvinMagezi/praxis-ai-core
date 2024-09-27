@@ -13,6 +13,20 @@ from .config.models import AgentContext
 from .utils.helpers import create_task
 import inspect
 
+# {{ edit_1: Import tools }}
+from .tools.file_operations import (
+    create_pdf_tool,
+    read_pdf_tool,
+    create_word_document_tool,
+    read_word_document_tool,
+    create_markdown_file_tool,
+    read_markdown_file_tool
+)
+from .tools.conversation_history import (
+    update_conversation_history_tool,
+    read_conversation_history_tool
+)
+
 console = Console()
 workspace_manager = WorkspaceManager()
 
@@ -67,26 +81,38 @@ def cli():
         # Pass tool_results to the chat function
         response = chat(user_input, conversation_history, current_workspace, tool_results) # {{ edit_1: Pass tool_results to chat }}
 
-        console.print(f"[bold green]Praxis[/bold green]: {response.text}")
-        conversation_history.append(f"You: {user_input}")
-        conversation_history.append(f"Praxis: {response.text}")
+        # Handle the response, whether it's a string or a Message object
+        assistant_response = response.text if hasattr(response, 'text') else str(response) # {{ edit_1: Access text attribute or convert to string }}
 
-        tool_results = [] # {{ edit_2: Reset tool_results after each user input }}
+        console.print(f"[bold green]Praxis[/bold green]: {assistant_response}")
+        conversation_history.append(f"You: {user_input}")
+        conversation_history.append(f"Praxis: {assistant_response}")
+
+        # Update conversation history after each response
+        update_conversation_history_tool(f"User: {user_input}\nPraxis: {assistant_response}", current_workspace)
+
+        tool_results = [] # {{ edit_3: Reset tool_results after each user input }}
 
         # Check if tool_calls exists and is not empty
-        if hasattr(response, 'tool_calls') and response.tool_calls: # {{ edit_3: Check for tool_calls attribute }}
+        if hasattr(response, 'tool_calls') and response.tool_calls: # {{ edit_4: Check for tool_calls attribute }}
             for tool_call in response.tool_calls:
                 tool_result = execute_tool(tool_call, current_workspace)
                 tool_results.append(tool_result)
 
                 # Update current workspace if it was changed during tool execution
-                if "enter_workspace_tool" in str(tool_call): # {{ edit_4: Check tool name within string representation }}
-                    current_workspace = tool_result.split("Entered workspace: ")[-1] # {{ edit_5: Extract workspace name }}
+                if "enter_workspace_tool" in str(tool_call): # {{ edit_5: Check tool name within string representation }}
+                    current_workspace = tool_result.split("Entered workspace: ")[-1] # {{ edit_6: Extract workspace name }}
 
             # Get Praxis's response to the tool results
-            response = chat(f"Tool execution results: {', '.join(tool_results)}", conversation_history, current_workspace, tool_results) # {{ edit_6: Pass tool_results to chat }}
-            console.print(f"[bold green]Praxis[/bold green]: {response.text}")
-            conversation_history.append(f"Praxis: {response.text}")
+            response = chat(f"Tool execution results: {', '.join(tool_results)}", conversation_history, current_workspace, tool_results) # {{ edit_7: Pass tool_results to chat }}
+            assistant_response = response.text if hasattr(response, 'text') else str(response) # {{ edit_2: Access text attribute or convert to string }}
+
+            console.print(f"[bold green]Praxis[/bold green]: {assistant_response}")
+            conversation_history.append(f"Praxis: {assistant_response}")
+
+            # Update conversation history with tool results
+            conversation_history.append(f"Praxis: {assistant_response}")
+            update_conversation_history_tool(f"Tool Results: {', '.join(tool_results)}\nPraxis: {assistant_response}", current_workspace)
 
 
     console.print("[bold cyan]Thank you for using Praxis AI. Goodbye![/bold cyan]")

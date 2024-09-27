@@ -30,6 +30,10 @@ setup(
         "beautifulsoup4",
         "pytest",
         "click",
+        "pypdf",
+        "python-docx",
+        "markdown",
+        "reportlab",
     ],
     entry_points={
         "console_scripts": [
