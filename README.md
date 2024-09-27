@@ -2,7 +2,7 @@
 
 Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, sub-agent, and refiner model to break down and complete complex tasks. Inspired by the Maestro project, Praxis AI takes task management and AI-assisted problem-solving to the next level with its workspace-centric approach and enhanced user interaction.
 
-Version: 0.1.1
+Version: 0.1.3
 Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
 ## Features
@@ -21,6 +21,8 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **Chat History**: Store and retrieve conversation history within workspaces.
 - **Workspace-Aware File Operations**: All file operations are performed within the context of the current workspace.
 - **API Key Management**: Securely manage and use API keys for various services.
+- **Chat-Based Interaction**: Intuitive chat interface for all Praxis AI interactions.
+- **Advanced Tool Execution**: Improved tool calling mechanism using the Ell framework.
 
 ## Installation
 
@@ -69,45 +71,22 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
 After installation, you can use Praxis AI through its command-line interface:
 
-1. List available workspaces:
+1. Start Praxis AI:
 
    ```
-   praxis list
+   praxis
    ```
 
-2. Create a new workspace:
+2. Once Praxis AI starts, you'll be in a chat interface. You can interact with Praxis using natural language. For example:
 
-   ```
-   praxis enter
-   ```
+   - To create a new workspace: "Create a new workspace called Projects for managing my projects"
+   - To list workspaces: "List all my workspaces"
+   - To enter a workspace: "Enter the Projects workspace"
+   - To start an objective: "I want to create a Python script that calculates prime numbers"
 
-   If no workspaces exist, you'll be prompted to create one.
+3. Praxis will guide you through the process, using various tools to accomplish tasks as needed.
 
-3. Enter an existing workspace:
-
-   ```
-   praxis enter "Workspace Name"
-   ```
-
-4. Start a chat session within a workspace:
-
-   Once you've entered a workspace, you'll be in chat mode. You can have a conversation with Praxis or start an objective:
-
-   ```
-   objective: Create a Python script that calculates prime numbers
-   ```
-
-5. View conversation history:
-
-   ```
-   praxis history --workspace "Workspace Name"
-   ```
-
-   If no workspace is specified, it will show the history for the current workspace.
-
-6. Exit a workspace:
-
-   Type 'exit' when in chat mode to leave the workspace.
+4. To exit Praxis AI, simply type 'exit' in the chat interface.
 
 ## API Usage
 
@@ -185,9 +164,13 @@ Sub-agents are specialized components that execute specific tasks. They receive 
 
 The refiner consolidates the results from sub-agents and provides a cohesive final output. It ensures that the overall objective is met and that the output is consistent with the current workspace context.
 
+### Chat Interface
+
+The chat interface provides a natural language interaction point for users to communicate with Praxis AI. It interprets user inputs, manages tool executions, and presents results in a conversational manner.
+
 ## Command-line Interface
 
-The CLI provides a rich, interactive interface for users to interact with Praxis AI. It uses the `rich` library to display colorful, formatted output and intuitive prompts for user input.
+The CLI now provides a chat-based interface for interacting with Praxis AI. It uses the `rich` library to display colorful, formatted output and intuitive prompts for user input.
 
 ## API Interface
 
@@ -228,6 +211,7 @@ If you encounter any issues:
 2. Check that you're using a compatible Python version (3.7+).
 3. Make sure all dependencies are installed correctly (`pip install -r requirements.txt`).
 4. If you encounter any "module not found" errors, try reinstalling the package (`pip install -e .`).
+5. If you encounter issues with tool execution or unexpected responses, check the debug output in the console for more information about tool calls and their results.
 
 For more help, please open an issue on the GitHub repository.
 

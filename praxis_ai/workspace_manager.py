@@ -1,7 +1,7 @@
 import os
 import json
 from pathlib import Path
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Any
 from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
@@ -248,3 +248,30 @@ class WorkspaceManager:
                 progress.update(task, completed=True)
         
         self.console.print("[bold green]Workspace structure initialized successfully![/bold green]")
+
+    def get_all_workspaces(self) -> Dict[str, Dict]:
+        return self.workspaces
+
+    def get_base_path(self) -> str:
+        return str(self.base_path)
+
+    def create_folder(self, workspace_name: str, folder_name: str) -> bool:
+        workspace_path = self.get_workspace_path(workspace_name)
+        if not workspace_path:
+            raise WorkspaceError(f"Workspace '{workspace_name}' does not exist")
+        
+        folder_path = Path(workspace_path) / folder_name
+        try:
+            folder_path.mkdir(parents=True, exist_ok=True)
+            self.console.print(f"[green]Folder '{folder_name}' created in workspace '{workspace_name}'[/green]")
+            return True
+        except Exception as e:
+            raise WorkspaceError(f"Error creating folder: {e}")
+
+    def update_workspace_state(self, workspace_name: str, key: str, value: Any) -> bool:
+        if workspace_name not in self.workspaces:
+            raise WorkspaceError(f"Workspace '{workspace_name}' does not exist")
+        
+        self.workspaces[workspace_name][key] = value
+        self._save_workspaces()
+        return True
