@@ -5,6 +5,27 @@ All notable changes to Praxis AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2024-09-27
+
+### Added
+
+- Improved chat-based interface for all Praxis AI interactions
+- Enhanced tool execution framework using Ell's tool calling mechanism
+- New `execute_tool` function for more robust tool handling
+- Debug output for tool calls to aid in troubleshooting
+
+### Changed
+
+- Refactored `cli.py` to use a chat-based interaction model
+- Updated `chat` function in `core/chat.py` to better handle tool calls and results
+- Modified `WorkspaceManager` to support the new chat-based workflow
+- Improved error handling and reporting in tool execution
+
+### Fixed
+
+- Resolved issues with tool execution not being reflected in Praxis's responses
+- Fixed inconsistencies in workspace creation and listing
+
 ## [0.1.2] - 2024-09-25
 
 ### Added
