@@ -28,6 +28,7 @@ from .tools.conversation_history import (
     read_conversation_history_tool
 )
 from .tools.web_search import web_search
+from .tools.calendar_tools import schedule_meeting, list_upcoming_meetings
 
 console = Console()
 workspace_manager = WorkspaceManager()
@@ -36,6 +37,7 @@ def check_api_keys():
     load_dotenv()
     openai_key = os.getenv("OPENAI_API_KEY")
     tavily_key = os.getenv("TAVILY_API_KEY")
+    google_credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
     
     if not openai_key:
         console.print("[yellow]No OpenAI API key found in environment variables.[/yellow]")
@@ -49,7 +51,13 @@ def check_api_keys():
         os.environ["TAVILY_API_KEY"] = tavily_key
         console.print("[green]Tavily API key set successfully.[/green]")
     
-    return openai_key and tavily_key
+    if not google_credentials:
+        console.print("[yellow]No Google Calendar credentials found in environment variables.[/yellow]")
+        google_credentials = Prompt.ask("Please enter the path to your Google Calendar credentials file")
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_credentials
+        console.print("[green]Google Calendar credentials set successfully.[/green]")
+    
+    return openai_key and tavily_key and google_credentials
 
 def initialize_praxis():
     base_path = workspace_manager.get_base_path()

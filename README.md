@@ -2,7 +2,7 @@
 
 Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, sub-agent, and refiner model to break down and complete complex tasks. Inspired by the Maestro project, Praxis AI takes task management and AI-assisted problem-solving to the next level with its workspace-centric approach and enhanced user interaction.
 
-Version: 0.1.5
+Version: 0.1.6
 Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
 ## Features
@@ -26,6 +26,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **Chat-Based Interaction**: Intuitive chat interface for all Praxis AI interactions.
 - **Advanced Tool Execution**: Improved tool calling mechanism using the Ell framework.
 - **Enhanced Web Search**: Integrated web search functionality using the Tavily API, with caching for faster repeated searches and rich formatting of results.
+- **Google Calendar Integration**: Schedule meetings and manage calendar events directly through Praxis AI.
 
 ## Installation
 
@@ -54,7 +55,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 4. Install additional dependencies:
 
    ```
-   pip install reportlab python-docx markdown tavily-python
+   pip install reportlab python-docx markdown tavily-python google-auth-oauthlib google-api-python-client
    ```
 
 5. Set up environment variables:
@@ -65,16 +66,25 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
    TAVILY_API_KEY=your_tavily_api_key_here
    GROQ_API_KEY=your_groq_api_key_here
+   GOOGLE_APPLICATION_CREDENTIALS=path/to/your/credentials.json
    ```
 
-   Alternatively, you can set these environment variables in your shell:
+   Alternatively, you can set these environment variables in your shell.
 
-   ```
-   export OPENAI_API_KEY=your_openai_api_key_here
-   export ANTHROPIC_API_KEY=your_anthropic_api_key_here
-   export TAVILY_API_KEY=your_tavily_api_key_here
-   export GROQ_API_KEY=your_groq_api_key_here
-   ```
+6. Set up Google Calendar credentials:
+   - Follow the steps in the "Google Calendar Setup" section below to obtain your `credentials.json` file.
+   - Place the `credentials.json` file in the root of your project folder.
+
+## Google Calendar Setup
+
+To use the Google Calendar integration:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a new project or select an existing one.
+3. Enable the Google Calendar API for your project.
+4. Create credentials (OAuth client ID) for a Desktop application.
+5. Download the credentials and save them as `credentials.json` in your project root.
+6. Update the `GOOGLE_CALENDAR_CREDENTIALS_FILE` in `config/settings.py` to point to this file.
 
 ## Usage
 
@@ -96,6 +106,8 @@ After installation, you can use Praxis AI through its command-line interface:
    - To read a Word document: "Read the contents of the file 'meeting_notes.docx'"
    - To create a Markdown file: "Create a Markdown file named 'todo.md' with a list of tasks"
    - To perform a web search: "Search for the latest developments in quantum computing"
+   - To schedule a meeting: "Schedule a meeting with John Doe about project updates tomorrow at 2 PM for 1 hour"
+   - To list upcoming meetings: "What are my upcoming meetings for this week?"
 
 3. Praxis will guide you through the process, using various tools to accomplish tasks as needed.
 
@@ -136,11 +148,13 @@ praxis_ai/
 │   │   ├── __init__.py
 │   │   ├── orchestrator.py
 │   │   ├── sub_agent.py
-│   │   └── refiner.py
+│   │   ├── refiner.py
+│   │   └── chat.py
 │   ├── tools/
 │   │   ├── __init__.py
 │   │   ├── file_operations.py
-│   │   └── web_search.py
+│   │   ├── web_search.py
+│   │   └── calendar_tools.py
 │   ├── utils/
 │   │   ├── __init__.py
 │   │   ├── logging.py
@@ -157,8 +171,10 @@ praxis_ai/
 ├── setup.py
 ├── requirements.txt
 ├── README.md
+├── CHANGELOG.md
 ├── LICENSE
-└── .env
+├── .env
+└── credentials.json
 ```
 
 ## Core Components
@@ -186,6 +202,10 @@ The `file_operations.py` module contains tools for creating and reading various 
 ### Web Search
 
 The `web_search.py` module provides enhanced web search capabilities using the Tavily API. It includes features such as result caching, rich formatting of search results, and automatic retries for improved reliability.
+
+### Calendar Tools
+
+The `calendar_tools.py` module integrates with Google Calendar, allowing Praxis AI to schedule meetings, list upcoming events, and manage calendar-related tasks.
 
 ### Chat Interface
 
@@ -227,12 +247,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - All contributors and users of Praxis AI who help improve and expand its capabilities.
 - The reportlab, python-docx, and markdown libraries for enabling advanced file handling capabilities.
 - Tavily for providing the API that powers Praxis AI's web search capabilities.
+- Google for the Calendar API that enables Praxis AI's scheduling capabilities.
 
 ## Troubleshooting
 
 If you encounter any issues:
 
-1. Ensure all required environment variables (API keys) are set correctly, including the Tavily API key for web search functionality.
+1. Ensure all required environment variables (API keys) are set correctly, including the Tavily API key for web search functionality and the path to your Google Calendar credentials.
 2. Check that you're using a compatible Python version (3.7+).
 3. Make sure all dependencies are installed correctly (`pip install -r requirements.txt`).
 4. If you encounter any "module not found" errors, try reinstalling the package (`pip install -e .`).
@@ -240,6 +261,7 @@ If you encounter any issues:
 6. If you encounter issues with file creation or reading, ensure that you have the necessary permissions in the workspace directory and that the required libraries (reportlab, python-docx, markdown) are correctly installed.
 7. If web searches are not working, verify that your Tavily API key is correct and that you have an active internet connection.
 8. If search results are not displaying correctly, ensure that your terminal supports rich text formatting.
+9. For Google Calendar integration issues, ensure that you've completed the Google Calendar setup process correctly and that your `credentials.json` file is in the correct location.
 
 For more help, please open an issue on the GitHub repository.
 
@@ -253,5 +275,6 @@ Praxis AI is an ongoing project with plans for continuous improvement and expans
 - Collaborative features for team-based problem-solving
 - Expanded tool integrations for more diverse task handling
 - Further enhancements to file handling capabilities, including support for more file formats and advanced operations like file merging and splitting.
+- Enhanced calendar integration with support for more complex scheduling scenarios and multi-calendar management.
 
 Stay tuned for updates and feel free to contribute ideas or code to shape the future of Praxis AI!

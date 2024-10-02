@@ -143,3 +143,6 @@ Desktop.ini
 
 # Output files (if any)
 output/
+
+credentials.json
+token.json
