@@ -5,6 +5,30 @@ All notable changes to Praxis AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2024-09-28
+
+### Added
+
+- Enhanced web search functionality using Tavily API
+- Caching for faster repeated searches using @lru_cache
+- Rich formatting for better display of search results
+- Summary of search results in addition to detailed results
+- Improved error handling with automatic retries for web searches
+- New configuration for Tavily API key in settings
+
+### Changed
+
+- Updated web_search tool to use Tavily API and provide more detailed results
+- Modified CLI to handle and display formatted web search results
+- Improved API key checking to include both OpenAI and Tavily keys
+- Enhanced execute_tool function in CLI to handle web search results differently
+
+### Improved
+
+- Better integration of web search results into the chat interface
+- More informative and visually appealing display of search results
+- Faster response times for repeated or similar web searches due to caching
+
 ## [0.1.4] - 2024-09-27
 
 ### Added

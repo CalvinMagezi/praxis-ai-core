@@ -26,6 +26,7 @@ from ..tools.conversation_history import (
     update_conversation_history_tool,
     read_conversation_history_tool
 )
+from ..tools.web_search import web_search
 
 workspace_manager = WorkspaceManager()
 
@@ -45,7 +46,8 @@ workspace_manager = WorkspaceManager()
     create_markdown_file_tool,
     read_markdown_file_tool,
     update_conversation_history_tool,
-    read_conversation_history_tool
+    read_conversation_history_tool,
+    web_search
 ])
 def chat(user_input: str, conversation_history: List[str], current_workspace: str, tool_results: List[str] = None):
     """Praxis AI Chat function that handles user interactions."""
@@ -54,7 +56,7 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     all_workspaces = workspace_manager.get_all_workspaces()
 
     system_message = f"""
-    You are {PRAXIS_NAME}, an advanced AI assistant specializing in workspace management and task execution. Your current status:
+    You are {PRAXIS_NAME}, an advanced AI assistant specializing in workspace management, task execution, and web search. Your current status:
     - Base workspace directory: {base_path}
     - Current workspace: '{current_workspace}'
     - Current workspace location: {workspace_path}
@@ -68,8 +70,9 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     4. Create and read various file types including PDFs, Word documents, and Markdown files.
     5. Maintain and utilize conversation history for context-aware interactions.
     6. Break down complex objectives into manageable sub-tasks when necessary.
+    7. Perform web searches to gather information and answer user queries.
 
-    You have access to several tools. Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
+    You have access to several tools, including a web search tool. Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
 
     Guidelines for responses:
     1. Be concise yet informative. Offer detailed explanations only when necessary or requested.
@@ -81,6 +84,7 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     7. Proactively suggest relevant actions or information based on the user's queries and the current context.
     8. When tools are executed, incorporate their results accurately in your responses.
     9. Update the conversation history after each interaction to maintain context awareness.
+    10. Use the web search tool to find up-to-date information when needed.
 
     Remember, your goal is to be a helpful, efficient, and reliable assistant. Always prioritize the user's needs and the integrity of their workspaces and projects.
     """

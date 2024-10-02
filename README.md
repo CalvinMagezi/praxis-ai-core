@@ -2,7 +2,7 @@
 
 Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, sub-agent, and refiner model to break down and complete complex tasks. Inspired by the Maestro project, Praxis AI takes task management and AI-assisted problem-solving to the next level with its workspace-centric approach and enhanced user interaction.
 
-Version: 0.1.4
+Version: 0.1.5
 Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
 ## Features
@@ -25,6 +25,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **API Key Management**: Securely manage and use API keys for various services.
 - **Chat-Based Interaction**: Intuitive chat interface for all Praxis AI interactions.
 - **Advanced Tool Execution**: Improved tool calling mechanism using the Ell framework.
+- **Enhanced Web Search**: Integrated web search functionality using the Tavily API, with caching for faster repeated searches and rich formatting of results.
 
 ## Installation
 
@@ -53,7 +54,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 4. Install additional dependencies:
 
    ```
-   pip install reportlab python-docx markdown
+   pip install reportlab python-docx markdown tavily-python
    ```
 
 5. Set up environment variables:
@@ -94,6 +95,7 @@ After installation, you can use Praxis AI through its command-line interface:
    - To create a PDF: "Create a PDF file named 'report.pdf' with the content 'This is a test report.'"
    - To read a Word document: "Read the contents of the file 'meeting_notes.docx'"
    - To create a Markdown file: "Create a Markdown file named 'todo.md' with a list of tasks"
+   - To perform a web search: "Search for the latest developments in quantum computing"
 
 3. Praxis will guide you through the process, using various tools to accomplish tasks as needed.
 
@@ -181,6 +183,10 @@ The refiner consolidates the results from sub-agents and provides a cohesive fin
 
 The `file_operations.py` module contains tools for creating and reading various file types, including PDFs, Word documents, and Markdown files. These operations are workspace-aware, ensuring that files are created and accessed within the context of the current workspace.
 
+### Web Search
+
+The `web_search.py` module provides enhanced web search capabilities using the Tavily API. It includes features such as result caching, rich formatting of search results, and automatic retries for improved reliability.
+
 ### Chat Interface
 
 The chat interface provides a natural language interaction point for users to communicate with Praxis AI. It interprets user inputs, manages tool executions, and presents results in a conversational manner.
@@ -220,17 +226,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - The Maestro project for inspiring the concept of AI-driven task management and problem-solving.
 - All contributors and users of Praxis AI who help improve and expand its capabilities.
 - The reportlab, python-docx, and markdown libraries for enabling advanced file handling capabilities.
+- Tavily for providing the API that powers Praxis AI's web search capabilities.
 
 ## Troubleshooting
 
 If you encounter any issues:
 
-1. Ensure all required environment variables (API keys) are set correctly.
+1. Ensure all required environment variables (API keys) are set correctly, including the Tavily API key for web search functionality.
 2. Check that you're using a compatible Python version (3.7+).
 3. Make sure all dependencies are installed correctly (`pip install -r requirements.txt`).
 4. If you encounter any "module not found" errors, try reinstalling the package (`pip install -e .`).
 5. If you encounter issues with tool execution or unexpected responses, check the debug output in the console for more information about tool calls and their results.
 6. If you encounter issues with file creation or reading, ensure that you have the necessary permissions in the workspace directory and that the required libraries (reportlab, python-docx, markdown) are correctly installed.
+7. If web searches are not working, verify that your Tavily API key is correct and that you have an active internet connection.
+8. If search results are not displaying correctly, ensure that your terminal supports rich text formatting.
 
 For more help, please open an issue on the GitHub repository.
 
@@ -239,7 +248,7 @@ For more help, please open an issue on the GitHub repository.
 Praxis AI is an ongoing project with plans for continuous improvement and expansion. Future developments may include:
 
 - Integration with more AI models and services
-- Enhanced web search and information retrieval capabilities
+- Further enhancements to web search and information retrieval capabilities
 - A web-based user interface for broader accessibility
 - Collaborative features for team-based problem-solving
 - Expanded tool integrations for more diverse task handling

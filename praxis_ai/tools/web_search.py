@@ -1,51 +1,91 @@
 # tools/web_search.py
 
-import requests
-from bs4 import BeautifulSoup
+import ell
+from tavily import TavilyClient
 from ..utils.logging import logger
+from ..config.settings import TAVILY_API_KEY
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from functools import lru_cache
+import time
 
-def web_search(query: str, num_results: int = 5) -> list:
-    """
-    Perform a web search and return a list of search results.
-    This is a placeholder implementation and should be replaced with a proper search API.
-    """
-    try:
-        # This is a mock implementation
-        results = [
-            {"title": f"Result {i} for {query}", "url": f"https://example.com/result{i}", "snippet": f"This is a snippet for result {i}"}
-            for i in range(1, num_results + 1)
-        ]
-        return results
-    except Exception as e:
-        logger.error(f"Error performing web search: {e}")
-        return []
+console = Console()
 
-def extract_content(url: str) -> str:
+@lru_cache(maxsize=100)
+def cached_search(query: str, num_results: int, search_depth: str):
+    tavily_client = TavilyClient(api_key=TAVILY_API_KEY)
+    return tavily_client.search(
+        query=query,
+        max_results=num_results,
+        search_depth=search_depth
+    )
+
+def format_search_results(results):
+    table = Table(title="Search Results", show_header=True, header_style="bold magenta")
+    table.add_column("Title", style="dim", width=30)
+    table.add_column("URL", style="dim")
+    table.add_column("Snippet", width=50)
+
+    for result in results:
+        table.add_row(
+            result['title'],
+            result['url'],
+            result['snippet'][:100] + "..." if len(result['snippet']) > 100 else result['snippet']
+        )
+
+    return table
+
+def summarize_results(results):
+    summary = "Summary of search results:\n"
+    for i, result in enumerate(results, 1):
+        summary += f"{i}. {result['title']}\n"
+    return summary
+
+@ell.tool()
+def web_search(query: str, num_results: int = 5, search_depth: str = "basic", retries: int = 3):
     """
-    Extract the main content from a web page.
-    This is a basic implementation and may need to be improved for production use.
+    Perform a web search using the Tavily API and return formatted search results.
+    
+    Args:
+    query (str): The search query.
+    num_results (int): Number of results to return (default: 5).
+    search_depth (str): Depth of search, 'basic' or 'advanced' (default: 'basic').
+    retries (int): Number of retries in case of failure (default: 3).
+    
+    Returns:
+    str: Formatted search results and summary.
     """
-    try:
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Remove script and style elements
-        for script in soup(["script", "style"]):
-            script.decompose()
-        
-        # Get text
-        text = soup.get_text()
-        
-        # Break into lines and remove leading and trailing space on each
-        lines = (line.strip() for line in text.splitlines())
-        
-        # Break multi-headlines into a line each
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        
-        # Drop blank lines
-        text = '\n'.join(chunk for chunk in chunks if chunk)
-        
-        return text
-    except Exception as e:
-        logger.error(f"Error extracting content from {url}: {e}")
-        return ""
+    for attempt in range(retries):
+        try:
+            start_time = time.time()
+            response = cached_search(query, num_results, search_depth)
+            end_time = time.time()
+
+            results = [
+                {
+                    "title": result['title'],
+                    "url": result['url'],
+                    "snippet": result['content']
+                }
+                for result in response['results']
+            ]
+
+            table = format_search_results(results)
+            summary = summarize_results(results)
+
+            console.print(Panel(table, title=f"Web Search Results for: {query}", expand=False))
+            console.print(f"Search completed in {end_time - start_time:.2f} seconds.")
+
+            return f"{summary}\n\nDetailed results:\n{table}"
+
+        except Exception as e:
+            if attempt < retries - 1:
+                logger.warning(f"Search attempt {attempt + 1} failed. Retrying... Error: {str(e)}")
+                time.sleep(1)  # Wait for 1 second before retrying
+            else:
+                error_message = f"Error performing web search after {retries} attempts: {str(e)}"
+                logger.error(error_message)
+                return error_message
+
+    return "Web search failed after multiple attempts."
