@@ -5,6 +5,29 @@ All notable changes to Praxis AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7] - 2024-09-30
+
+### Added
+
+- Enhanced calendar tools with new functionalities:
+  - `get_user_timezone`: Retrieves the user's timezone.
+  - `update_meeting`: Updates an existing meeting.
+  - `delete_meeting`: Deletes a meeting.
+  - `find_free_time`: Finds available time slots.
+- Optional calendar functionality controlled by the `ENABLE_CALENDAR` setting.
+- Prompts for Google Calendar credentials if needed.
+
+### Changed
+
+- Updated `calendar_tools.py` with enhanced functions and optional calendar support.
+- Modified `core/chat.py` to include new calendar tools and handle optional calendar functionality.
+- Updated `cli.py` to inform the user about calendar functionality and prompt for credentials if necessary.
+
+### Improved
+
+- More robust and flexible calendar integration.
+- Better user experience with optional calendar features and credential prompting.
+
 ## [0.1.6] - 2024-09-29
 
 ### Added
@@ -166,58 +189,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - More consistent user experience across different Praxis AI components
   - Chat now uses similar Ell-based architecture as orchestrator, sub-agent, and refiner
 
-## [0.1.0] - 2024-09-24
-
-### ⚠️ BREAKING CHANGES
-
-This release contains significant breaking changes. Please review carefully before upgrading.
-
-### Added
-
-- Workspace-aware functionality
-  - All operations are now performed within the context of the current workspace
-  - File operations (read/write) are workspace-specific
-- Chat history feature
-  - Conversations are now stored as individual chat files within each workspace
-  - New `praxis history` command to view past conversations
-- API key management
-  - Automatic checking for OpenAI API key on startup
-  - Prompt for API key input if not found in environment variables
-- Enhanced CLI commands
-  - `praxis enter` command now supports entering workspaces directly
-  - Added `--workspace` option to various commands for specifying workspaces
-- Persistent chat sessions
-  - Chat sessions are automatically saved when exiting a workspace
-  - Chat titles are derived from the first few words of the conversation
-
-### Changed
-
-- Restructured project layout for better modularity
-  - Moved core components into separate modules
-  - Reorganized utility functions and tools
-- Updated `WorkspaceManager` class
-  - Added methods for managing chat history and logs
-  - Improved error handling and workspace selection
-- Modified `cli.py` to support new workspace-aware and chat features
-  - Updated main CLI group to include API key checking
-  - Refactored command functions to work with new workspace structure
-- Revised `file_operations.py` to be workspace-aware
-  - All file operations now take workspace context into account
-- Updated `orchestrator`, `sub_agent`, and `refiner` to work within workspace context
-- Modified API interface to support workspace-aware operations
-
-### Removed
-
-- Removed global state management in favor of workspace-specific state
-- Eliminated deprecated utility functions that were not workspace-aware
-
-### Fixed
-
-- Resolved issues with concurrent access to workspaces
-- Fixed bugs related to file path handling in different operating systems
-- Addressed race conditions in chat history saving
-
-## [0.0.1] - 2024-09-23
+## [0.1.0] - 2024-09-23
 
 ### Added
 

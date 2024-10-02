@@ -1,7 +1,7 @@
 # core/chat.py
 
 import ell
-from ..config.settings import CHAT_MODEL, PRAXIS_NAME
+from ..config.settings import CHAT_MODEL, PRAXIS_NAME, ENABLE_CALENDAR
 from ..workspace_manager import WorkspaceManager
 from typing import List
 from ..tools.workspace_tools import (
@@ -27,11 +27,11 @@ from ..tools.conversation_history import (
     read_conversation_history_tool
 )
 from ..tools.web_search import web_search
-from ..tools.calendar_tools import schedule_meeting, list_upcoming_meetings  # Add this line
 
 workspace_manager = WorkspaceManager()
 
-@ell.complex(model=CHAT_MODEL, tools=[
+# Define the list of tools
+tools = [
     create_workspace_tool,
     list_workspaces_tool,
     enter_workspace_tool,
@@ -49,9 +49,28 @@ workspace_manager = WorkspaceManager()
     update_conversation_history_tool,
     read_conversation_history_tool,
     web_search,
-    schedule_meeting,  # Add this line
-    list_upcoming_meetings  # Add this line
-])
+]
+
+# Conditionally add calendar tools if enabled
+if ENABLE_CALENDAR:
+    from ..tools.calendar_tools import (
+        get_user_timezone,
+        schedule_meeting,
+        list_upcoming_meetings,
+        update_meeting,
+        delete_meeting,
+        find_free_time
+    )
+    tools.extend([
+        get_user_timezone,
+        schedule_meeting,
+        list_upcoming_meetings,
+        update_meeting,
+        delete_meeting,
+        find_free_time
+    ])
+
+@ell.complex(model=CHAT_MODEL, tools=tools)
 def chat(user_input: str, conversation_history: List[str], current_workspace: str, tool_results: List[str] = None):
     """Praxis AI Chat function that handles user interactions."""
     workspace_path = workspace_manager.get_workspace_path(current_workspace) if current_workspace else "No workspace selected"
@@ -65,6 +84,7 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     - Current workspace location: {workspace_path}
     - Number of existing workspaces: {len(all_workspaces)}
     - All workspace names: {', '.join(all_workspaces.keys()) if all_workspaces else 'No workspaces yet'}
+    - Calendar functionality: {"Enabled" if ENABLE_CALENDAR else "Disabled"}
 
     Your primary responsibilities:
     1. Assist users with queries and tasks, always considering the current workspace context and conversation history.
@@ -74,9 +94,17 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     5. Maintain and utilize conversation history for context-aware interactions.
     6. Break down complex objectives into manageable sub-tasks when necessary.
     7. Perform web searches to gather information and answer user queries.
-    8. Schedule meetings and manage calendar events using Google Calendar.
+    8. Schedule meetings and manage calendar events using Google Calendar (if enabled).
 
-    You have access to several tools, including a web search tool and calendar management tools. Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
+    You have access to several tools, including a web search tool and calendar management tools (if enabled). Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
+
+    Calendar Tools (when enabled):
+    - get_user_timezone: Retrieve the user's timezone from Google Calendar settings.
+    - schedule_meeting: Schedule a new meeting on Google Calendar.
+    - list_upcoming_meetings: List upcoming meetings from Google Calendar.
+    - update_meeting: Update an existing meeting on Google Calendar.
+    - delete_meeting: Delete a meeting from Google Calendar.
+    - find_free_time: Find available time slots for a meeting within a given date range.
 
     Guidelines for responses:
     1. Be concise yet informative. Offer detailed explanations only when necessary or requested.
@@ -89,7 +117,7 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     8. When tools are executed, incorporate their results accurately in your responses.
     9. Update the conversation history after each interaction to maintain context awareness.
     10. Use the web search tool to find up-to-date information when needed.
-    11. For calendar-related tasks, use the appropriate calendar tools to schedule meetings or list upcoming events.
+    11. For calendar-related tasks, use the appropriate calendar tools to schedule meetings, list upcoming events, update or delete meetings, and find free time slots (if enabled).
 
     Remember, your goal is to be a helpful, efficient, and reliable assistant. Always prioritize the user's needs and the integrity of their workspaces, projects, and schedule.
     """
