@@ -9,9 +9,15 @@ from reportlab.lib.pagesizes import letter
 from io import BytesIO
 import pypdf
 import docx
-
+import shutil
+import mimetypes
+import magic  # New dependency for improved file type detection
 
 workspace_manager = WorkspaceManager()
+
+def get_mime_type(file_path):
+    """Get the MIME type of a file."""
+    return magic.from_file(file_path, mime=True)
 
 @ell.tool()
 def read_file_tool(file_path: str, current_workspace: str) -> str:
@@ -31,8 +37,16 @@ def read_file_tool(file_path: str, current_workspace: str) -> str:
 
     full_path = Path(workspace_path) / file_path
     try:
-        with open(full_path, 'r') as file:
-            content = file.read()
+        mime_type = get_mime_type(str(full_path))
+        if mime_type.startswith('text/'):
+            with open(full_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+        elif mime_type == 'application/pdf':
+            content = read_pdf_tool(file_path, current_workspace)
+        elif mime_type in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
+            content = read_word_document_tool(file_path, current_workspace)
+        else:
+            return f"Error: Unsupported file type: {mime_type}"
         return content
     except IOError as e:
         error_message = f"Error reading file: {full_path}. Error: {e}"
@@ -58,7 +72,8 @@ def write_file_tool(file_path: str, content: str, current_workspace: str) -> str
 
     full_path = Path(workspace_path) / file_path
     try:
-        with open(full_path, 'w') as file:
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(full_path, 'w', encoding='utf-8') as file:
             file.write(content)
         success_message = f"File written successfully: {full_path}"
         logger.info(success_message)
@@ -110,7 +125,7 @@ def create_folder_structure_tool(project_name: str, folder_structure: dict, code
                 code_content = next((code for file, code in code_blocks if file == key), None)
                 if code_content:
                     try:
-                        with open(path, 'w') as file:
+                        with open(path, 'w', encoding='utf-8') as file:
                             file.write(code_content)
                         logger.info(f"Created file: {path}")
                     except IOError as e:
@@ -138,6 +153,7 @@ def create_pdf_tool(file_path: str, content: str, current_workspace: str) -> str
         c.drawText(text_object)
         c.save()
 
+        full_path.parent.mkdir(parents=True, exist_ok=True)
         with open(full_path, 'wb') as file:
             file.write(buffer.getvalue())
         return f"PDF file created successfully: {full_path}"
@@ -177,6 +193,7 @@ def create_word_document_tool(file_path: str, content: str, current_workspace: s
     try:
         doc = docx.Document()
         doc.add_paragraph(content)
+        full_path.parent.mkdir(parents=True, exist_ok=True)
         doc.save(full_path)
         return f"Word document created successfully: {full_path}"
     except Exception as e:
@@ -210,7 +227,8 @@ def create_markdown_file_tool(file_path: str, content: str, current_workspace: s
 
     full_path = Path(workspace_path) / file_path
     try:
-        with open(full_path, 'w') as file:
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(full_path, 'w', encoding='utf-8') as file:
             file.write(content)
         return f"Markdown file created successfully: {full_path}"
     except Exception as e:
@@ -227,10 +245,82 @@ def read_markdown_file_tool(file_path: str, current_workspace: str) -> str:
 
     full_path = Path(workspace_path) / file_path
     try:
-        with open(full_path, 'r') as file:
+        with open(full_path, 'r', encoding='utf-8') as file:
             content = file.read()
         return content
     except Exception as e:
         error_message = f"Error reading Markdown file: {full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def copy_file_tool(source_path: str, destination_path: str, current_workspace: str) -> str:
+    """Copy a file within the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    source_full_path = Path(workspace_path) / source_path
+    destination_full_path = Path(workspace_path) / destination_path
+
+    try:
+        destination_full_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_full_path, destination_full_path)
+        return f"File copied successfully from {source_full_path} to {destination_full_path}"
+    except Exception as e:
+        error_message = f"Error copying file from {source_full_path} to {destination_full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def move_file_tool(source_path: str, destination_path: str, current_workspace: str) -> str:
+    """Move a file within the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    source_full_path = Path(workspace_path) / source_path
+    destination_full_path = Path(workspace_path) / destination_path
+
+    try:
+        destination_full_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(source_full_path, destination_full_path)
+        return f"File moved successfully from {source_full_path} to {destination_full_path}"
+    except Exception as e:
+        error_message = f"Error moving file from {source_full_path} to {destination_full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def delete_file_tool(file_path: str, current_workspace: str) -> str:
+    """Delete a file from the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    full_path = Path(workspace_path) / file_path
+
+    try:
+        full_path.unlink()
+        return f"File deleted successfully: {full_path}"
+    except Exception as e:
+        error_message = f"Error deleting file: {full_path}. Error: {e}"
+        logger.error(error_message)
+        return error_message
+
+@ell.tool()
+def list_files_tool(directory_path: str, current_workspace: str) -> str:
+    """List files in a directory within the specified workspace."""
+    workspace_path = workspace_manager.get_workspace_path(current_workspace)
+    if not workspace_path:
+        return f"Error: No valid workspace path for workspace: {current_workspace}"
+
+    full_path = Path(workspace_path) / directory_path
+
+    try:
+        files = [f.name for f in full_path.iterdir() if f.is_file()]
+        return f"Files in {full_path}:\n" + "\n".join(files)
+    except Exception as e:
+        error_message = f"Error listing files in directory: {full_path}. Error: {e}"
         logger.error(error_message)
         return error_message

@@ -19,3 +19,7 @@ markdown
 reportlab
 google-auth-oauthlib
 google-api-python-client
+cryptography
+pyyaml
+python-magic
+libmagic

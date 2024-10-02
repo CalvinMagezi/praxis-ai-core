@@ -5,6 +5,30 @@ All notable changes to Praxis AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] - 2024-10-01
+
+### Added
+
+- Enhanced file operation tools with new functionalities:
+  - `copy_file_tool`: Copies a file within the workspace.
+  - `move_file_tool`: Moves a file within the workspace.
+  - `delete_file_tool`: Deletes a file from the workspace.
+  - `list_files_tool`: Lists files in a directory within the workspace.
+- Improved file type detection using the `python-magic` library.
+- Better handling of binary files in read operations.
+
+### Changed
+
+- Updated `file_operations.py` with new and improved file operation functions.
+- Modified `core/chat.py` to include new file operation tools and update system message.
+- Updated `cli.py` to import and utilize the new file operation tools.
+
+### Improved
+
+- More robust and flexible file operations within workspaces.
+- Enhanced error handling and logging for file operations.
+- Better integration of file operations into the chat interface.
+
 ## [0.1.7] - 2024-09-30
 
 ### Added

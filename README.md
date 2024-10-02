@@ -2,7 +2,7 @@
 
 Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, sub-agent, and refiner model to break down and complete complex tasks. Inspired by the Maestro project, Praxis AI takes task management and AI-assisted problem-solving to the next level with its workspace-centric approach and enhanced user interaction.
 
-Version: 0.1.7
+Version: 0.1.8
 Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
 ## Features
@@ -18,7 +18,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **Persistent Storage**: Save and load workspace data between sessions.
 - **Error Handling**: Robust error handling throughout the application.
 - **Pip-installable Package**: Easy installation and usage as a Python package.
-- **Advanced File Handling**: Create and read various file types including PDFs, Word documents, and Markdown files within workspaces.
+- **Advanced File Handling**: Create, read, copy, move, and delete various file types including PDFs, Word documents, and Markdown files within workspaces.
 - **Conversation History Management**: Maintain and utilize conversation history for context-aware interactions across sessions.
 - **Chat History**: Store and retrieve conversation history within workspaces.
 - **Workspace-Aware File Operations**: All file operations are performed within the context of the current workspace.
@@ -27,6 +27,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **Advanced Tool Execution**: Improved tool calling mechanism using the Ell framework.
 - **Enhanced Web Search**: Integrated web search functionality using the Tavily API, with caching for faster repeated searches and rich formatting of results.
 - **Google Calendar Integration**: Schedule meetings and manage calendar events directly through Praxis AI.
+- **Improved File Type Detection**: Better handling of various file types using the python-magic library.
 
 ## Installation
 
@@ -55,7 +56,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 4. Install additional dependencies:
 
    ```
-   pip install reportlab python-docx markdown tavily-python google-auth-oauthlib google-api-python-client
+   pip install reportlab python-docx markdown tavily-python google-auth-oauthlib google-api-python-client python-magic
    ```
 
 5. Set up environment variables:
@@ -106,6 +107,10 @@ After installation, you can use Praxis AI through its command-line interface:
    - To create a PDF: "Create a PDF file named 'report.pdf' with the content 'This is a test report.'"
    - To read a Word document: "Read the contents of the file 'meeting_notes.docx'"
    - To create a Markdown file: "Create a Markdown file named 'todo.md' with a list of tasks"
+   - To copy a file: "Copy the file 'report.pdf' to 'backup_report.pdf'"
+   - To move a file: "Move the file 'old_notes.txt' to the 'archive' folder"
+   - To delete a file: "Delete the file 'temp.txt'"
+   - To list files in a directory: "List all files in the 'documents' folder"
    - To perform a web search: "Search for the latest developments in quantum computing"
    - To schedule a meeting: "Schedule a meeting with John Doe about project updates tomorrow at 2 PM for 1 hour"
    - To list upcoming meetings: "What are my upcoming meetings for this week?"
@@ -198,7 +203,7 @@ The refiner consolidates the results from sub-agents and provides a cohesive fin
 
 ### File Operations
 
-The `file_operations.py` module contains tools for creating and reading various file types, including PDFs, Word documents, and Markdown files. These operations are workspace-aware, ensuring that files are created and accessed within the context of the current workspace.
+The `file_operations.py` module contains tools for creating, reading, copying, moving, and deleting various file types, including PDFs, Word documents, and Markdown files. These operations are workspace-aware, ensuring that files are managed within the context of the current workspace. The module now includes improved file type detection using the python-magic library.
 
 ### Web Search
 
@@ -249,6 +254,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - The reportlab, python-docx, and markdown libraries for enabling advanced file handling capabilities.
 - Tavily for providing the API that powers Praxis AI's web search capabilities.
 - Google for the Calendar API that enables Praxis AI's scheduling capabilities.
+- The python-magic library for improved file type detection.
 
 ## Troubleshooting
 
@@ -259,7 +265,7 @@ If you encounter any issues:
 3. Make sure all dependencies are installed correctly (`pip install -r requirements.txt`).
 4. If you encounter any "module not found" errors, try reinstalling the package (`pip install -e .`).
 5. If you encounter issues with tool execution or unexpected responses, check the debug output in the console for more information about tool calls and their results.
-6. If you encounter issues with file creation or reading, ensure that you have the necessary permissions in the workspace directory and that the required libraries (reportlab, python-docx, markdown) are correctly installed.
+6. If you encounter issues with file creation, reading, or manipulation, ensure that you have the necessary permissions in the workspace directory and that the required libraries (reportlab, python-docx, markdown, python-magic) are correctly installed.
 7. If web searches are not working, verify that your Tavily API key is correct and that you have an active internet connection.
 8. If search results are not displaying correctly, ensure that your terminal supports rich text formatting.
 9. For Google Calendar integration issues, ensure that you've completed the Google Calendar setup process correctly and that your `credentials.json` file is in the correct location.
@@ -277,5 +283,6 @@ Praxis AI is an ongoing project with plans for continuous improvement and expans
 - Expanded tool integrations for more diverse task handling
 - Further enhancements to file handling capabilities, including support for more file formats and advanced operations like file merging and splitting.
 - Enhanced calendar integration with support for more complex scheduling scenarios and multi-calendar management.
+- Improved natural language processing for more intuitive file and workspace management commands.
 
 Stay tuned for updates and feel free to contribute ideas or code to shape the future of Praxis AI!

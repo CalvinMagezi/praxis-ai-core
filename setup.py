@@ -35,7 +35,11 @@ setup(
         "markdown",
         "reportlab",
         "google-auth-oauthlib",
-        "google-api-python-client"
+        "google-api-python-client",
+        "cryptography",
+        "pyyaml",
+        "python-magic",
+        "libmagic"
     ],
     entry_points={
         "console_scripts": [

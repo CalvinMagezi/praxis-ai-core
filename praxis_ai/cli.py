@@ -16,12 +16,19 @@ import inspect
 
 # Import tools
 from .tools.file_operations import (
+    read_file_tool,
+    write_file_tool,
+    create_folder_structure_tool,
     create_pdf_tool,
     read_pdf_tool,
     create_word_document_tool,
     read_word_document_tool,
     create_markdown_file_tool,
-    read_markdown_file_tool
+    read_markdown_file_tool,
+    copy_file_tool,
+    move_file_tool,
+    delete_file_tool,
+    list_files_tool
 )
 from .tools.conversation_history import (
     update_conversation_history_tool,

@@ -20,7 +20,11 @@ from ..tools.file_operations import (
     create_word_document_tool,
     read_word_document_tool,
     create_markdown_file_tool,
-    read_markdown_file_tool
+    read_markdown_file_tool,
+    copy_file_tool,
+    move_file_tool,
+    delete_file_tool,
+    list_files_tool
 )
 from ..tools.conversation_history import (
     update_conversation_history_tool,
@@ -46,6 +50,10 @@ tools = [
     read_word_document_tool,
     create_markdown_file_tool,
     read_markdown_file_tool,
+    copy_file_tool,
+    move_file_tool,
+    delete_file_tool,
+    list_files_tool,
     update_conversation_history_tool,
     read_conversation_history_tool,
     web_search,
@@ -90,13 +98,28 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     1. Assist users with queries and tasks, always considering the current workspace context and conversation history.
     2. Manage workspaces efficiently, including creation, navigation, and deletion.
     3. Execute file operations and project structuring within workspaces.
-    4. Create and read various file types including PDFs, Word documents, and Markdown files.
+    4. Create, read, copy, move, and delete various file types including PDFs, Word documents, and Markdown files.
     5. Maintain and utilize conversation history for context-aware interactions.
     6. Break down complex objectives into manageable sub-tasks when necessary.
     7. Perform web searches to gather information and answer user queries.
     8. Schedule meetings and manage calendar events using Google Calendar (if enabled).
 
-    You have access to several tools, including a web search tool and calendar management tools (if enabled). Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
+    You have access to several tools, including file operations, web search, and calendar management tools (if enabled). Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
+
+    File Operation Tools:
+    - read_file_tool: Read the contents of a file.
+    - write_file_tool: Write content to a file.
+    - create_folder_structure_tool: Create a folder structure with files.
+    - create_pdf_tool: Create a PDF file.
+    - read_pdf_tool: Read the contents of a PDF file.
+    - create_word_document_tool: Create a Word document.
+    - read_word_document_tool: Read the contents of a Word document.
+    - create_markdown_file_tool: Create a Markdown file.
+    - read_markdown_file_tool: Read the contents of a Markdown file.
+    - copy_file_tool: Copy a file within the workspace.
+    - move_file_tool: Move a file within the workspace.
+    - delete_file_tool: Delete a file from the workspace.
+    - list_files_tool: List files in a directory within the workspace.
 
     Calendar Tools (when enabled):
     - get_user_timezone: Retrieve the user's timezone from Google Calendar settings.
@@ -118,6 +141,7 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     9. Update the conversation history after each interaction to maintain context awareness.
     10. Use the web search tool to find up-to-date information when needed.
     11. For calendar-related tasks, use the appropriate calendar tools to schedule meetings, list upcoming events, update or delete meetings, and find free time slots (if enabled).
+    12. Utilize the new file operation tools (copy, move, delete, list) when appropriate to manage files efficiently.
 
     Remember, your goal is to be a helpful, efficient, and reliable assistant. Always prioritize the user's needs and the integrity of their workspaces, projects, and schedule.
     """
