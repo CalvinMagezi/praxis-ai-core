@@ -34,6 +34,8 @@ setup(
         "python-docx",
         "markdown",
         "reportlab",
+        "google-auth-oauthlib",
+        "google-api-python-client"
     ],
     entry_points={
         "console_scripts": [

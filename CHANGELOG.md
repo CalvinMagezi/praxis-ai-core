@@ -5,6 +5,29 @@ All notable changes to Praxis AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2024-09-29
+
+### Added
+
+- Google Calendar integration
+- New `calendar_tools.py` module for interacting with Google Calendar API
+- `schedule_meeting` tool for creating calendar events
+- `list_upcoming_meetings` tool for retrieving upcoming events
+- Google Calendar setup instructions in README
+- New configuration for Google Calendar credentials in settings
+
+### Changed
+
+- Updated `core/chat.py` to include new calendar tools
+- Modified CLI to handle and display calendar-related results
+- Enhanced API key checking to include Google Calendar credentials
+- Updated `requirements.txt` to include Google Calendar API dependencies
+
+### Improved
+
+- More comprehensive scheduling capabilities within Praxis AI
+- Better integration of calendar management into the chat interface
+
 ## [0.1.5] - 2024-09-28
 
 ### Added

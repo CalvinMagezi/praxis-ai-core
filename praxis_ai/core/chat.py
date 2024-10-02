@@ -27,6 +27,7 @@ from ..tools.conversation_history import (
     read_conversation_history_tool
 )
 from ..tools.web_search import web_search
+from ..tools.calendar_tools import schedule_meeting, list_upcoming_meetings  # Add this line
 
 workspace_manager = WorkspaceManager()
 
@@ -47,7 +48,9 @@ workspace_manager = WorkspaceManager()
     read_markdown_file_tool,
     update_conversation_history_tool,
     read_conversation_history_tool,
-    web_search
+    web_search,
+    schedule_meeting,  # Add this line
+    list_upcoming_meetings  # Add this line
 ])
 def chat(user_input: str, conversation_history: List[str], current_workspace: str, tool_results: List[str] = None):
     """Praxis AI Chat function that handles user interactions."""
@@ -56,7 +59,7 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     all_workspaces = workspace_manager.get_all_workspaces()
 
     system_message = f"""
-    You are {PRAXIS_NAME}, an advanced AI assistant specializing in workspace management, task execution, and web search. Your current status:
+    You are {PRAXIS_NAME}, an advanced AI assistant specializing in workspace management, task execution, web search, and calendar management. Your current status:
     - Base workspace directory: {base_path}
     - Current workspace: '{current_workspace}'
     - Current workspace location: {workspace_path}
@@ -71,8 +74,9 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     5. Maintain and utilize conversation history for context-aware interactions.
     6. Break down complex objectives into manageable sub-tasks when necessary.
     7. Perform web searches to gather information and answer user queries.
+    8. Schedule meetings and manage calendar events using Google Calendar.
 
-    You have access to several tools, including a web search tool. Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
+    You have access to several tools, including a web search tool and calendar management tools. Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
 
     Guidelines for responses:
     1. Be concise yet informative. Offer detailed explanations only when necessary or requested.
@@ -85,8 +89,9 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     8. When tools are executed, incorporate their results accurately in your responses.
     9. Update the conversation history after each interaction to maintain context awareness.
     10. Use the web search tool to find up-to-date information when needed.
+    11. For calendar-related tasks, use the appropriate calendar tools to schedule meetings or list upcoming events.
 
-    Remember, your goal is to be a helpful, efficient, and reliable assistant. Always prioritize the user's needs and the integrity of their workspaces and projects.
+    Remember, your goal is to be a helpful, efficient, and reliable assistant. Always prioritize the user's needs and the integrity of their workspaces, projects, and schedule.
     """
 
     messages = [
