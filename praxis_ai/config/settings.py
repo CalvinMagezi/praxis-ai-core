@@ -38,6 +38,9 @@ GOOGLE_CALENDAR_CREDENTIALS_FILE = os.getenv("GOOGLE_CALENDAR_CREDENTIALS_FILE")
 # Flag to enable/disable calendar functionality
 ENABLE_CALENDAR = os.getenv("ENABLE_CALENDAR", "false").lower() == "true"
 
+# Flag to enable/disable reasoning
+REASONING = os.getenv("REASONING", "false").lower() == "true"
+
 missing_keys = []
 if not TAVILY_API_KEY:
     missing_keys.append("TAVILY_API_KEY")

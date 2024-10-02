@@ -35,7 +35,7 @@ from .tools.conversation_history import (
     read_conversation_history_tool
 )
 from .tools.web_search import web_search
-from .config.settings import ENABLE_CALENDAR
+from .config.settings import ENABLE_CALENDAR, REASONING # Import REASONING
 
 console = Console()
 workspace_manager = WorkspaceManager()
@@ -90,25 +90,24 @@ def initialize_praxis():
 
 @click.command()
 def cli():
-    """Praxis AI - Your intelligent workspace assistant with web search and calendar management capabilities"""
+    """Praxis AI - Your intelligent workspace assistant with web search, calendar management, and reasoning capabilities"""
     if not check_api_keys():
         console.print("[red]Required API keys are missing. Exiting.[/red]")
         return
 
     initialize_praxis()
 
-    console.print(Panel.fit("Welcome to Praxis AI - Your intelligent workspace assistant with web search and calendar management capabilities", border_style="cyan"))
+    console.print(Panel.fit("Welcome to Praxis AI - Your intelligent workspace assistant with web search, calendar management, and reasoning capabilities", border_style="cyan"))
     console.print("Type 'exit' to quit the chat at any time.")
     console.print("You can ask questions, request information, manage your workspaces, and interact with your calendar (if enabled).")
 
+    if REASONING:  # Conditional output for reasoning mode
+        console.print("[green]Reasoning mode is enabled. Praxis will use advanced reasoning techniques to break down and solve complex tasks.[/green]")
+    else:
+        console.print("[yellow]Reasoning mode is currently disabled. You can enable it by setting REASONING=true in your environment or .env file.[/yellow]")
+
     if ENABLE_CALENDAR:
-        console.print("[green]Calendar functionality is enabled. You can use the following calendar-related commands:[/green]")
-        console.print("- Get your timezone")
-        console.print("- Schedule a meeting")
-        console.print("- List upcoming meetings")
-        console.print("- Update a meeting")
-        console.print("- Delete a meeting")
-        console.print("- Find free time slots")
+        console.print("[green]Calendar functionality is enabled. You can use calendar-related commands.[/green]") # Simplified output
     else:
         console.print("[yellow]Calendar functionality is currently disabled. You can enable it by setting ENABLE_CALENDAR=true in your environment or .env file.[/yellow]")
 
@@ -128,7 +127,10 @@ def cli():
         # Handle the response, whether it's a string or a Message object
         assistant_response = response.text if hasattr(response, 'text') else str(response)
 
-        console.print(Markdown(f"**Praxis**: {assistant_response}"))
+        # Use Markdown for Praxis's response and add it to the conversation history
+        markdown_response = Markdown(f"**Praxis**: {assistant_response}")
+        console.print(markdown_response)
+
         conversation_history.append(f"You: {user_input}")
         conversation_history.append(f"Praxis: {assistant_response}")
 
@@ -151,11 +153,12 @@ def cli():
             response = chat(f"Tool execution results: {', '.join(tool_results)}", conversation_history, current_workspace, tool_results)
             assistant_response = response.text if hasattr(response, 'text') else str(response)
 
-            console.print(Markdown(f"**Praxis**: {assistant_response}"))
+            # Use Markdown for Praxis's response and add it to the conversation history
+            markdown_response = Markdown(f"**Praxis**: {assistant_response}")
+            console.print(markdown_response)
             conversation_history.append(f"Praxis: {assistant_response}")
 
             # Update conversation history with tool results
-            conversation_history.append(f"Praxis: {assistant_response}")
             update_conversation_history_tool(f"Tool Results: {', '.join(tool_results)}\nPraxis: {assistant_response}", current_workspace)
 
     console.print("[bold cyan]Thank you for using Praxis AI. Goodbye![/bold cyan]")

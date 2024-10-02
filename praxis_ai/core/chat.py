@@ -1,7 +1,5 @@
-# core/chat.py
-
 import ell
-from ..config.settings import CHAT_MODEL, PRAXIS_NAME, ENABLE_CALENDAR
+from ..config.settings import CHAT_MODEL, PRAXIS_NAME, ENABLE_CALENDAR, REASONING
 from ..workspace_manager import WorkspaceManager
 from typing import List
 from ..tools.workspace_tools import (
@@ -31,8 +29,17 @@ from ..tools.conversation_history import (
     read_conversation_history_tool
 )
 from ..tools.web_search import web_search
+from .orchestrator import orchestrator
+from .refiner import refiner
+from .sub_agent import sub_agent
+from ..config.models import AgentContext, Task
+
+import uuid # import uuid
+from rich.console import Console # import rich
+from rich.panel import Panel # import rich
 
 workspace_manager = WorkspaceManager()
+console = Console() # initialize console
 
 # Define the list of tools
 tools = [
@@ -93,6 +100,7 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     - Number of existing workspaces: {len(all_workspaces)}
     - All workspace names: {', '.join(all_workspaces.keys()) if all_workspaces else 'No workspaces yet'}
     - Calendar functionality: {"Enabled" if ENABLE_CALENDAR else "Disabled"}
+    - Reasoning mode: {"Enabled" if REASONING else "Disabled"}
 
     Your primary responsibilities:
     1. Assist users with queries and tasks, always considering the current workspace context and conversation history.
@@ -100,34 +108,9 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     3. Execute file operations and project structuring within workspaces.
     4. Create, read, copy, move, and delete various file types including PDFs, Word documents, and Markdown files.
     5. Maintain and utilize conversation history for context-aware interactions.
-    6. Break down complex objectives into manageable sub-tasks when necessary.
-    7. Perform web searches to gather information and answer user queries.
-    8. Schedule meetings and manage calendar events using Google Calendar (if enabled).
-
-    You have access to several tools, including file operations, web search, and calendar management tools (if enabled). Use them when necessary to complete tasks. Always execute one tool at a time and wait for the result before proceeding.
-
-    File Operation Tools:
-    - read_file_tool: Read the contents of a file.
-    - write_file_tool: Write content to a file.
-    - create_folder_structure_tool: Create a folder structure with files.
-    - create_pdf_tool: Create a PDF file.
-    - read_pdf_tool: Read the contents of a PDF file.
-    - create_word_document_tool: Create a Word document.
-    - read_word_document_tool: Read the contents of a Word document.
-    - create_markdown_file_tool: Create a Markdown file.
-    - read_markdown_file_tool: Read the contents of a Markdown file.
-    - copy_file_tool: Copy a file within the workspace.
-    - move_file_tool: Move a file within the workspace.
-    - delete_file_tool: Delete a file from the workspace.
-    - list_files_tool: List files in a directory within the workspace.
-
-    Calendar Tools (when enabled):
-    - get_user_timezone: Retrieve the user's timezone from Google Calendar settings.
-    - schedule_meeting: Schedule a new meeting on Google Calendar.
-    - list_upcoming_meetings: List upcoming meetings from Google Calendar.
-    - update_meeting: Update an existing meeting on Google Calendar.
-    - delete_meeting: Delete a meeting from Google Calendar.
-    - find_free_time: Find available time slots for a meeting within a given date range.
+    6. Perform web searches to gather information and answer user queries.
+    7. Schedule meetings and manage calendar events using Google Calendar (if enabled).
+    8. If reasoning mode is enabled, use the orchestrator, sub-agent, and refiner to break down complex tasks and provide detailed, step-by-step solutions.
 
     Guidelines for responses:
     1. Be concise yet informative. Offer detailed explanations only when necessary or requested.
@@ -141,9 +124,7 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     9. Update the conversation history after each interaction to maintain context awareness.
     10. Use the web search tool to find up-to-date information when needed.
     11. For calendar-related tasks, use the appropriate calendar tools to schedule meetings, list upcoming events, update or delete meetings, and find free time slots (if enabled).
-    12. Utilize the new file operation tools (copy, move, delete, list) when appropriate to manage files efficiently.
-
-    Remember, your goal is to be a helpful, efficient, and reliable assistant. Always prioritize the user's needs and the integrity of their workspaces, projects, and schedule.
+    12. In reasoning mode, leverage the orchestrator, sub-agent, and refiner to provide comprehensive and well-reasoned responses.
     """
 
     messages = [
@@ -160,5 +141,52 @@ def chat(user_input: str, conversation_history: List[str], current_workspace: st
     if history:
         messages.append(ell.system(f"Conversation history:\n{history}"))
 
-    # The @ell.complex decorator will handle the chat completion
-    return messages
+    def is_complex_task(user_input: str) -> bool: # new function
+        """Determine if a task is complex enough to warrant reasoning mode."""
+        simple_tasks = [
+            "enter workspace",
+            "create workspace",
+            "list workspaces",
+            "delete workspace",
+            "hello",
+            "hi",
+            "help"
+        ]
+        return not any(task in user_input.lower() for task in simple_tasks)
+
+    if REASONING and is_complex_task(user_input): # updated condition
+        console.print(Panel("Entering reasoning mode for complex task", style="bold green")) # rich print statement
+        # Initialize the AgentContext
+        context = AgentContext(objective=user_input, previous_results=[], tasks=[])
+
+        while True:
+            # Get the next sub-task from the orchestrator
+            orchestrator_response = orchestrator(context)
+            if orchestrator_response.text.startswith("The task is complete:"):
+                # If the task is complete, use the refiner to generate the final output
+                final_output = refiner(context)
+                console.print(Panel(f"Refined output: {final_output.text}", style="bold blue")) # rich print statement
+                return final_output
+
+            # Create a new task for the sub-agent
+            new_task = Task(
+                id=str(uuid.uuid4()),  # Generate a unique ID for the task
+                description=orchestrator_response.text,
+                status="pending"  # Set an initial status for the task
+            )
+            context.tasks.append(new_task)
+
+            # Execute the sub-task using the sub-agent
+            sub_agent_response = sub_agent(new_task, context.tasks[:-1])
+            new_task.result = sub_agent_response.text
+            new_task.status = "completed"  # Update the status after execution
+
+            # Update the context with the new result
+            context.previous_results.append(new_task.result)
+            console.print(Panel(f"Executing sub-task: {new_task.description}", style="yellow")) # rich print statement
+            console.print(Panel(f"Sub-task result: {new_task.result}", style="green")) # rich print statement
+
+    else:
+        # If reasoning mode is disabled, use the standard chat completion
+        console.print(Panel("Using standard chat mode", style="bold blue")) # rich print statement
+        return messages

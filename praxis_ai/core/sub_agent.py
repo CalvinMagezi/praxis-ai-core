@@ -1,5 +1,3 @@
-# core/sub_agent.py
-
 import ell
 from ..config.settings import SUB_AGENT_MODEL, PRAXIS_NAME
 from ..config.models import Task
@@ -22,12 +20,12 @@ def sub_agent(task: Task, previous_tasks: List[Task] = None):
         f"located at {workspace_path}. Your goal is to execute tasks accurately, provide detailed explanations of your reasoning, "
         "and ensure the correctness and quality of any code. Always explain your thought process and validate your output thoroughly. "
         "When dealing with files or paths, make sure to use the correct workspace path.\n\n"
-        "Previous tasks:\n" + "\n".join(f"Task: {task.description}\nResult: {task.result}" for task in previous_tasks)
+        "Previous tasks:\n" + "\n".join(f"Task ID: {task.id}\nDescription: {task.description}\nStatus: {task.status}\nResult: {task.result}" for task in previous_tasks)
     )
     
     messages = [
         ell.system(system_message),
-        ell.user(task.description)
+        ell.user(f"Task ID: {task.id}\nDescription: {task.description}\nStatus: {task.status}")
     ]
 
     return messages
