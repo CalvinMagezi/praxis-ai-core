@@ -2,7 +2,7 @@
 
 Praxis AI is an advanced, scalable AI assistant that leverages an orchestrator, sub-agent, and refiner model to break down and complete complex tasks. Inspired by the Maestro project, Praxis AI takes task management and AI-assisted problem-solving to the next level with its workspace-centric approach and enhanced user interaction.
 
-Version: 0.1.6
+Version: 0.1.7
 Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 
 ## Features
@@ -67,6 +67,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
    TAVILY_API_KEY=your_tavily_api_key_here
    GROQ_API_KEY=your_groq_api_key_here
    GOOGLE_APPLICATION_CREDENTIALS=path/to/your/credentials.json
+   ENABLE_CALENDAR=true
    ```
 
    Alternatively, you can set these environment variables in your shell.

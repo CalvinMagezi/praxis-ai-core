@@ -4,7 +4,7 @@ import os
 import click
 from rich.console import Console
 from rich.panel import Panel
-from rich.prompt import Prompt
+from rich.prompt import Prompt, Confirm
 from rich import print as rprint
 from rich.markdown import Markdown
 from dotenv import load_dotenv
@@ -28,7 +28,7 @@ from .tools.conversation_history import (
     read_conversation_history_tool
 )
 from .tools.web_search import web_search
-from .tools.calendar_tools import schedule_meeting, list_upcoming_meetings
+from .config.settings import ENABLE_CALENDAR
 
 console = Console()
 workspace_manager = WorkspaceManager()
@@ -37,7 +37,6 @@ def check_api_keys():
     load_dotenv()
     openai_key = os.getenv("OPENAI_API_KEY")
     tavily_key = os.getenv("TAVILY_API_KEY")
-    google_credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
     
     if not openai_key:
         console.print("[yellow]No OpenAI API key found in environment variables.[/yellow]")
@@ -51,13 +50,20 @@ def check_api_keys():
         os.environ["TAVILY_API_KEY"] = tavily_key
         console.print("[green]Tavily API key set successfully.[/green]")
     
-    if not google_credentials:
-        console.print("[yellow]No Google Calendar credentials found in environment variables.[/yellow]")
-        google_credentials = Prompt.ask("Please enter the path to your Google Calendar credentials file")
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_credentials
-        console.print("[green]Google Calendar credentials set successfully.[/green]")
+    if ENABLE_CALENDAR:
+        google_credentials = os.getenv("GOOGLE_CALENDAR_CREDENTIALS_FILE")
+        if not google_credentials:
+            console.print("[yellow]No Google Calendar credentials found in environment variables.[/yellow]")
+            use_calendar = Confirm.ask("Do you want to enable Google Calendar functionality?")
+            if use_calendar:
+                google_credentials = Prompt.ask("Please enter the path to your Google Calendar credentials file")
+                os.environ["GOOGLE_CALENDAR_CREDENTIALS_FILE"] = google_credentials
+                console.print("[green]Google Calendar credentials set successfully.[/green]")
+            else:
+                console.print("[yellow]Google Calendar functionality will be disabled.[/yellow]")
+                os.environ["ENABLE_CALENDAR"] = "false"
     
-    return openai_key and tavily_key and google_credentials
+    return openai_key and tavily_key
 
 def initialize_praxis():
     base_path = workspace_manager.get_base_path()
@@ -68,24 +74,36 @@ def initialize_praxis():
     - Base workspace directory: {base_path}
     - Number of existing workspaces: {len(workspaces)}
     - Workspace names: {', '.join(workspaces.keys()) if workspaces else 'No workspaces yet'}
+    - Calendar functionality: {"Enabled" if ENABLE_CALENDAR else "Disabled"}
     
-    Praxis is ready to assist with managing these workspaces, creating new ones as needed, and performing web searches for up-to-date information.
+    Praxis is ready to assist with managing these workspaces, creating new ones as needed, performing web searches for up-to-date information, and managing your calendar (if enabled).
     """
     
     console.print(Panel(system_message, title="Praxis AI Initialization", border_style="green"))
 
 @click.command()
 def cli():
-    """Praxis AI - Your intelligent workspace assistant with web search capabilities"""
+    """Praxis AI - Your intelligent workspace assistant with web search and calendar management capabilities"""
     if not check_api_keys():
-        console.print("[red]API keys are missing. Exiting.[/red]")
+        console.print("[red]Required API keys are missing. Exiting.[/red]")
         return
 
     initialize_praxis()
 
-    console.print(Panel.fit("Welcome to Praxis AI - Your intelligent workspace assistant with web search capabilities", border_style="cyan"))
+    console.print(Panel.fit("Welcome to Praxis AI - Your intelligent workspace assistant with web search and calendar management capabilities", border_style="cyan"))
     console.print("Type 'exit' to quit the chat at any time.")
-    console.print("You can ask questions or request information, and Praxis will use its web search capability when needed.")
+    console.print("You can ask questions, request information, manage your workspaces, and interact with your calendar (if enabled).")
+
+    if ENABLE_CALENDAR:
+        console.print("[green]Calendar functionality is enabled. You can use the following calendar-related commands:[/green]")
+        console.print("- Get your timezone")
+        console.print("- Schedule a meeting")
+        console.print("- List upcoming meetings")
+        console.print("- Update a meeting")
+        console.print("- Delete a meeting")
+        console.print("- Find free time slots")
+    else:
+        console.print("[yellow]Calendar functionality is currently disabled. You can enable it by setting ENABLE_CALENDAR=true in your environment or .env file.[/yellow]")
 
     conversation_history = []
     current_workspace = None
