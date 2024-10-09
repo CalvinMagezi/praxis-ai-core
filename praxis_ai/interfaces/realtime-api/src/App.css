@@ -1,0 +1,47 @@
+/* src/App.css */
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+}
+
+#status {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.messages {
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  text-align: left;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.message {
+  margin-bottom: 15px;
+}
+
+.message.user {
+  text-align: right;
+}
+
+.message.assistant {
+  text-align: left;
+}
+
+.message.system {
+  text-align: center;
+  font-style: italic;
+  color: gray;
+}
+
+audio {
+  margin-top: 5px;
+}

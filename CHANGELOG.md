@@ -5,6 +5,37 @@ All notable changes to Praxis AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2024-10-09
+
+### Added
+
+- Implemented Realtime API functionality
+  - New WebSocket-based server for real-time communication
+  - Support for audio input and output
+  - Integration with OpenAI's GPT-4 model
+  - Text transcription of audio inputs and outputs
+  - Conversation history management within WebSocket sessions
+  - Moderation of content for appropriate responses
+- New frontend application for interacting with the Realtime API
+  - Audio recording and playback capabilities
+  - Real-time text and audio message display
+- Enhanced error handling and reconnection logic for WebSocket connections
+- New directory structure for Realtime API implementation:
+  - `praxis_ai/interfaces/realtime-api/backend/server.js`
+  - `praxis_ai/interfaces/realtime-api/src/App.js`
+  - `praxis_ai/interfaces/realtime-api/src/App.css`
+
+### Changed
+
+- Updated project structure to include the new Realtime API implementation
+- Modified README to include information about the Realtime API feature
+
+### Improved
+
+- Real-time interaction capabilities of Praxis AI
+- Multi-modal communication support (text and audio)
+- Robustness of WebSocket connections with error handling and reconnection logic
+
 ## [0.1.8] - 2024-10-01
 
 ### Added
