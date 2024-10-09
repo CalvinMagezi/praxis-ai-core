@@ -28,6 +28,7 @@ Author: Calvin Magezi (GitHub: [@calvinmagezi](https://github.com/calvinmagezi))
 - **Enhanced Web Search**: Integrated web search functionality using the Tavily API, with caching for faster repeated searches and rich formatting of results.
 - **Google Calendar Integration**: Schedule meetings and manage calendar events directly through Praxis AI.
 - **Improved File Type Detection**: Better handling of various file types using the python-magic library.
+- **Realtime API Implementation**: WebSocket-based communication for real-time interactions, supporting audio input and output, text transcription, integration with OpenAI's GPT-4 model, content moderation, conversation history management, and error handling.
 
 ## Installation
 
@@ -286,3 +287,37 @@ Praxis AI is an ongoing project with plans for continuous improvement and expans
 - Improved natural language processing for more intuitive file and workspace management commands.
 
 Stay tuned for updates and feel free to contribute ideas or code to shape the future of Praxis AI!
+
+## Realtime API Implementation
+
+Praxis AI now includes a Realtime API implementation that enables low-latency, multi-modal conversational experiences. This new feature supports text and audio as both input and output, as well as function calling.
+
+Key features of the Realtime API implementation:
+
+- WebSocket-based communication for real-time interactions
+- Support for audio input and output, including speech-to-speech capabilities
+- Text transcription of audio inputs and outputs
+- Integration with OpenAI's GPT-4 model for advanced language processing
+- Moderation of content to ensure appropriate responses
+- Conversation history management within the WebSocket session
+- Error handling and reconnection logic for robust performance
+
+### Usage
+
+To use the Realtime API implementation:
+
+1. Start the WebSocket server:
+
+   ```
+   node praxis_ai/interfaces/realtime-api/backend/server.js
+   ```
+
+2. Open the frontend application in a web browser (ensure you've built the frontend first):
+
+   ```
+   open praxis_ai/interfaces/realtime-api/public/index.html
+   ```
+
+3. Use the interface to start recording audio or type text messages. The AI will respond in both text and audio formats.
+
+For more details on the implementation, refer to the `praxis_ai/interfaces/realtime-api` directory.
